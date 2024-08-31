@@ -44,20 +44,20 @@ bool studentMoveTurtle(QPointF& pos_, int& nw_or)
 		bp = bumped(fx1,fy1,fx2,fy2);
 		aend = atend(pos_.x(), pos_.y());
 		if(nw_or == 0)
-		if(cs == 2)  { nw_or = 3;  cs = 1; }
-		else if (bp) { nw_or = 1;  cs = 0; }
-		else cs = 2;
-		else if(nw_or == 1)
-		if(cs == 2)  { nw_or = 0;  cs = 1; }
-		else if (bp) { nw_or = 2;  cs = 0; }
-		else cs = 2;
-		else if(nw_or == 2)
 		if(cs == 2)  { nw_or = 1;  cs = 1; }
 		else if (bp) { nw_or = 3;  cs = 0; }
 		else cs = 2;
-		else if(nw_or == 3)
+		else if(nw_or == 1)
 		if(cs == 2)  { nw_or = 2;  cs = 1; }
 		else if (bp) { nw_or = 0;  cs = 0; }
+		else cs = 2;
+		else if(nw_or == 2)
+		if(cs == 2)  { nw_or = 3;  cs = 1; }
+		else if (bp) { nw_or = 1;  cs = 0; }
+		else cs = 2;
+		else if(nw_or == 3)
+		if(cs == 2)  { nw_or = 0;  cs = 1; }
+		else if (bp) { nw_or = 2;  cs = 0; }
 		else cs = 2;
 	 ROS_INFO("Orientation=%f  STATE=%f", nw_or, cs);
      z = cs == 2;
