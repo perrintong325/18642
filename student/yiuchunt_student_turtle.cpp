@@ -53,20 +53,22 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         fx2 += 1;
         break;
       case DOWN:
-        fx2 += 1;
-        fy2 += 1;
-        fx1 += 1;
+        // fx2 += 1;
+        // fy2 += 1;
+        // fx1 += 1;
+        fy1 -= 1;
         break;
       case LEFT:
-        fx2 += 1;
-        fy2 += 1;
-        fy1 += 1;
+        // fx2 += 1;
+        // fy2 += 1;
+        // fy1 += 1;
+        fx1 -= 1;
         break;
     }
 
     bp = bumped(fx1, fy1, fx2, fy2);
     aend = atend(pos_.x(), pos_.y());
-    
+
     if (cs == 2) {
       switch(nw_or) {
         case UP:
@@ -103,7 +105,7 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
       cs = 2;
     }
     ROS_INFO("Orientation=%f  STATE=%f", nw_or, cs);
-    z = cs == 2;
+    z = (cs == 2);
     mod = true;
     if (z == true && aend == false) {
       if (nw_or == RIGHT)
@@ -120,11 +122,11 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
   }
   if (aend)
     return false;
-  if (w == 0)
+  if (w == 0) {
     w = TIMEOUT;
-  else
-    w -= 1;
-  if (w == TIMEOUT)
     return true;
-  return false;
+  } else {
+    w -= 1;
+    return false;
+  }
 }
