@@ -56,7 +56,7 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         // fx2 += 1;
         // fy2 += 1;
         // fx1 += 1;
-        fy1 -= 1;
+        fy2 -= 1;
         break;
       case LEFT:
         // fx2 += 1;
