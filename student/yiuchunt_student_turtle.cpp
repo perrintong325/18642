@@ -20,9 +20,9 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 
 #define TIMEOUT                                                                \
   40 // bigger number slows down simulation so you can see what's happening
-float w, currentState, prevState;
+float time, current_state, prev_state;
 float fx1, fy1, fx2, fy2;
-float aend, bp, q;
+float solved, bump;
 
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state {
@@ -35,14 +35,15 @@ enum state {
 // Ground rule -- you are only allowed to call the helper functions "bumped(..)"
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
 // the maze!)
-bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
-  ROS_INFO("Turtle update Called  w=%f", w);
-  if (w == 0) {
+bool studentMoveTurtle(QPointF &pos_, int &new_or) {
+  ROS_INFO("Turtle update Called  time=%f", time);
+  if (time == 0) {
     fx1 = pos_.x();
     fy1 = pos_.y();
     fx2 = pos_.x();
     fy2 = pos_.y();
-    switch (nw_or) {
+
+    switch (new_or) { 
     case LEFT:
       fy2 += 1;
       break;
@@ -50,80 +51,77 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
       fx2 += 1;
       break;
     case RIGHT:
-      fx2 += 1;
       fy2 += 1;
-      fx1 += 1;
       break;
     case UP:
       fx2 += 1;
-      fy2 += 1;
-      fy1 += 1;
       break;
     }
 
-    bp = bumped(fx1, fy1, fx2, fy2);
-    aend = atend(pos_.x(), pos_.y());
+    bump = bumped(fx1, fy1, fx2, fy2);
+    solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
-    if (prevState == GO) {        
-      switch (nw_or) {
+    if (prev_state == GO) {        
+      switch (new_or) {
       case LEFT:
-        nw_or = DOWN;
+        new_or = DOWN;
         break;
       case DOWN:
-        nw_or = RIGHT;
+        new_or = RIGHT;
         break;
       case RIGHT:
-        nw_or = UP;
+        new_or = UP;
         break;
       case UP:
-        nw_or = LEFT;
+        new_or = LEFT;
         break;
       }
-      currentState = CHECKBP;
-    } else {
-      //previous state here is checkbp
-      if (bp) {      // if bumped after turn undo turn/turn left 
-        switch (nw_or) {
+      current_state = CHECKBP;
+    } else {           // previous state here is checkbp
+      if (bump) {      // if bumped after turn undo turn/turn left 
+        switch (new_or) {
         case LEFT:
-          nw_or = UP;
+          new_or = UP;
           break;
         case DOWN:
-          nw_or = LEFT;
+          new_or = LEFT;
           break;
         case RIGHT:
-          nw_or = DOWN;
+          new_or = DOWN;
           break;
         case UP:
-          nw_or = RIGHT;
+          new_or = RIGHT;
           break;
         }
       } else {      // if there's no bump, go straight
-        currentState = GO;
+        current_state = GO;
       }
     }
     
-    ROS_INFO("Orientation=%f  STATE=%f", nw_or, currentState);
-    prevState = currentState;
+    ROS_INFO("Orientation=%f  STATE=%f", new_or, current_state);
+    prev_state = current_state;
 
-    if (currentState == GO && aend == false) {
-      if (nw_or == DOWN)
+    if (current_state == GO && solved == false) {
+      if (new_or == DOWN)
         pos_.setY(pos_.y() - 1);
-      if (nw_or == RIGHT)
+      if (new_or == RIGHT)
         pos_.setX(pos_.x() + 1);
-      if (nw_or == UP)
+      if (new_or == UP)
         pos_.setY(pos_.y() + 1);
-      if (nw_or == LEFT)
+      if (new_or == LEFT)
         pos_.setX(pos_.x() - 1);
     }
   }
-  if (aend)
+  
+  if (solved)
     return false;
-  if (w == 0)
-    w = TIMEOUT;
-  else
-    w -= 1;
-  if (w == TIMEOUT)
+
+  if (time == 0) {
+    time = TIMEOUT;
     return true;
-  return false;
+  } else {
+    time -= 1;
+    return false;
+  }
 }
