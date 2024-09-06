@@ -20,7 +20,7 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 
 #define TIMEOUT                                                                \
   40 // bigger number slows down simulation so you can see what's happening
-float time, current_state, prev_state;
+float cycle, current_state, prev_state;
 float fx1, fy1, fx2, fy2;
 float solved, bump;
 
@@ -36,8 +36,8 @@ enum state {
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
 // the maze!)
 bool studentMoveTurtle(QPointF &pos_, int &new_or) {
-  ROS_INFO("Turtle update Called  time=%f", time);
-  if (time == 0) {
+  ROS_INFO("Turtle update Called  cycle=%f", cycle);
+  if (cycle == 0) {
     fx1 = pos_.x();
     fy1 = pos_.y();
     fx2 = pos_.x();
@@ -117,11 +117,11 @@ bool studentMoveTurtle(QPointF &pos_, int &new_or) {
   if (solved)
     return false;
 
-  if (time == 0) {
-    time = TIMEOUT;
+  if (cycle == 0) {
+    cycle = TIMEOUT;
     return true;
   } else {
-    time -= 1;
+    cycle -= 1;
     return false;
   }
 }
