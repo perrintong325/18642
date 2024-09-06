@@ -39,6 +39,10 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
   ROS_INFO("Turtle update Called  w=%f", w);
   mod = true;
   if (w == 0) {
+    fx1 = pos_.x();
+    fy1 = pos_.y();
+    fx2 = pos_.x();
+    fy2 = pos_.y();
     switch (nw_or) {
     case LEFT:
       fy2 += 1;
