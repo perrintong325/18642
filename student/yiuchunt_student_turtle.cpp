@@ -61,8 +61,10 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
       fy1 += 1;
       break;
     }
+    
     bp = bumped(fx1, fy1, fx2, fy2);
     aend = atend(pos_.x(), pos_.y());
+
     // if went straight last cycle turn right to find new path
     if (prevState == GO) {        
       switch (nw_or) {
@@ -80,27 +82,29 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         break;
       }
       currentState = CHECKBP;
-    } else if (bp) {      // if bumped in after turn undo turn/turn left 
-      switch (nw_or) {
-      case LEFT:
-        nw_or = UP;
-        break;
-      case DOWN:
-        nw_or = LEFT;
-        break;
-      case RIGHT:
-        nw_or = DOWN;
-        break;
-      case UP:
-        nw_or = RIGHT;
-        break;
+    } else {
+      //previous state here is checkbp
+      if (bp) {      // if bumped after turn undo turn/turn left 
+        switch (nw_or) {
+        case LEFT:
+          nw_or = UP;
+          break;
+        case DOWN:
+          nw_or = LEFT;
+          break;
+        case RIGHT:
+          nw_or = DOWN;
+          break;
+        case UP:
+          nw_or = RIGHT;
+          break;
+        }
+      } else {      // if there's no bump, go straight
+        currentState = GO;
       }
-      currentState = CHECKBP;
-    } else {              // if no bump when cs != GO, go straight
-      currentState = GO;
     }
-    ROS_INFO("Orientation=%f  STATE=%f", nw_or, cs);
-    z = (currentState == GO);     // if cs == GO, go straight
+    ROS_INFO("Orientation=%f  STATE=%f", nw_or, currentState);
+    z = (currentState == GO);     // if currentState == GO, go straight
     prevState = currentState;
     mod = true;
 
