@@ -37,7 +37,6 @@ enum state {
 // the maze!)
 bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
   ROS_INFO("Turtle update Called  w=%f", w);
-  mod = true;
   if (w == 0) {
     fx1 = pos_.x();
     fy1 = pos_.y();
