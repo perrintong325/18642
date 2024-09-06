@@ -20,14 +20,14 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 
 #define TIMEOUT                                                                \
   40 // bigger number slows down simulation so you can see what's happening
-float w, cs;
+float w, currentState, prevState;
 float fx1, fy1, fx2, fy2;
 float z, aend, mod, bp, q;
 
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state {
-  GO = 2,
-  CHECKBP = 1
+  GO = 1,
+  CHECKBP = 0
 };
 
 // this procedure takes the current turtle position and orientation and returns
@@ -64,7 +64,7 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
     bp = bumped(fx1, fy1, fx2, fy2);
     aend = atend(pos_.x(), pos_.y());
     // if went straight last cycle turn right to find new path
-    if (cs == GO) {        
+    if (prevState == GO) {        
       switch (nw_or) {
       case LEFT:
         nw_or = DOWN;
@@ -79,8 +79,8 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         nw_or = LEFT;
         break;
       }
-      cs = CHECKBP;
-    } else if (bp) {      // if bumped in after turn undo turn 
+      currentState = CHECKBP;
+    } else if (bp) {      // if bumped in after turn undo turn/turn left 
       switch (nw_or) {
       case LEFT:
         nw_or = UP;
@@ -95,11 +95,13 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         nw_or = RIGHT;
         break;
       }
-    } else {              // if no bump in cs 1 or 0 go straight
-      cs = GO;
+      currentState = CHECKBP;
+    } else {              // if no bump when cs != GO, go straight
+      currentState = GO;
     }
     ROS_INFO("Orientation=%f  STATE=%f", nw_or, cs);
-    z = (cs == GO);
+    z = (currentState == GO);     // if cs == GO, go straight
+    prevState = currentState;
     mod = true;
 
     if (z == true && aend == false) {
