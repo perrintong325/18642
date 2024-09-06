@@ -22,7 +22,7 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
   40 // bigger number slows down simulation so you can see what's happening
 float w, currentState, prevState;
 float fx1, fy1, fx2, fy2;
-float z, aend, mod, bp, q;
+float aend, bp, q;
 
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state {
@@ -61,7 +61,7 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
       fy1 += 1;
       break;
     }
-    
+
     bp = bumped(fx1, fy1, fx2, fy2);
     aend = atend(pos_.x(), pos_.y());
 
@@ -103,12 +103,11 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         currentState = GO;
       }
     }
+    
     ROS_INFO("Orientation=%f  STATE=%f", nw_or, currentState);
-    z = (currentState == GO);     // if currentState == GO, go straight
     prevState = currentState;
-    mod = true;
 
-    if (z == true && aend == false) {
+    if (currentState == GO && aend == false) {
       if (nw_or == DOWN)
         pos_.setY(pos_.y() - 1);
       if (nw_or == RIGHT)
@@ -117,8 +116,6 @@ bool studentMoveTurtle(QPointF &pos_, int &nw_or) {
         pos_.setY(pos_.y() + 1);
       if (nw_or == LEFT)
         pos_.setX(pos_.x() - 1);
-      z = false;
-      mod = true;
     }
   }
   if (aend)
