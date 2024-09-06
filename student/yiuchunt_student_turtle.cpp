@@ -28,7 +28,7 @@ enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state {
   GO = 2,
   CHECKBP = 1
-}
+};
 
 // this procedure takes the current turtle position and orientation and returns
 // true=submit changes, false=do not submit changes
