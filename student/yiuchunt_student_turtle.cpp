@@ -72,62 +72,71 @@ bool studentMoveTurtle(QPointF &pos_, int &new_or) {
     solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
-    if (prev_state == GO) {
-      switch (new_or) {
-      case LEFT:
-        new_or = DOWN;
-        break;
-      case DOWN:
-        new_or = RIGHT;
-        break;
-      case RIGHT:
-        new_or = UP;
-        break;
-      case UP:
-        new_or = LEFT;
-        break;
-      default:
-        break;
-      }
-      current_state = CHECKBP;
-    } else {      // previous state here is checkbp
-      if (bump) { // if bumped after turn undo turn/turn left
+    switch(prev_state) {
+      case GO:
         switch (new_or) {
         case LEFT:
-          new_or = UP;
-          break;
-        case DOWN:
-          new_or = LEFT;
-          break;
-        case RIGHT:
           new_or = DOWN;
           break;
-        case UP:
+        case DOWN:
           new_or = RIGHT;
+          break;
+        case RIGHT:
+          new_or = UP;
+          break;
+        case UP:
+          new_or = LEFT;
           break;
         default:
           break;
         }
-      } else { // if there's no bump, go straight
-        current_state = GO;
-      }
+        current_state = CHECKBP;
+        break;
+      case CHECKBP:
+        if (bump) { // if bumped after turn undo turn/turn left
+          switch (new_or) {
+          case LEFT:
+            new_or = UP;
+            break;
+          case DOWN:
+            new_or = LEFT;
+            break;
+          case RIGHT:
+            new_or = DOWN;
+            break;
+          case UP:
+            new_or = RIGHT;
+            break;
+          default:
+            break;
+          }
+        } else { // if there's no bump, go straight
+          current_state = GO;
+        }
+        break;
+      default:
+        break;
     }
 
     ROS_INFO("Orientation=%f  STATE=%f", new_or, current_state);
 
-    if (current_state == GO && solved == false) {
-      if (new_or == DOWN)
-        pos_.setY(pos_.y() - 1);
-      if (new_or == RIGHT)
-        pos_.setX(pos_.x() + 1);
-      if (new_or == UP)
-        pos_.setY(pos_.y() + 1);
-      if (new_or == LEFT)
-        pos_.setX(pos_.x() - 1);
+    switch(current_state) {
+      case GO:
+        if (solved == false) {
+          if (new_or == DOWN)
+            pos_.setY(pos_.y() - 1);
+          if (new_or == RIGHT)
+            pos_.setX(pos_.x() + 1);
+          if (new_or == UP)
+            pos_.setY(pos_.y() + 1);
+          if (new_or == LEFT)
+            pos_.setX(pos_.x() - 1);
+        }
+        break;
+      default:
+        break;
     }
-
     prev_state = current_state;
-  }
 
   if (solved)
     return false;
