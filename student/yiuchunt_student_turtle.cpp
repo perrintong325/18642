@@ -21,11 +21,17 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 const int TIMEOUT =
     4; // bigger number slows down simulation so you can see what's happening
 int cycle, current_state, prev_state;
-int fx1, fy1, fx2, fy2;
 int solved, bump;
 
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state { GO = 1, CHECKBP = 0 };
+
+struct Position {
+    float x;
+    float y;
+};
+
+typedef Position Pos;
 
 // this procedure takes the current turtle position and orientation and returns
 // true=submit changes, false=do not submit changes
@@ -35,33 +41,34 @@ enum state { GO = 1, CHECKBP = 0 };
 bool studentMoveTurtle(QPointF &pos_, int &new_or) {
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
-    fx1 = pos_.x();
-    fy1 = pos_.y();
-    fx2 = pos_.x();
-    fy2 = pos_.y();
+    Pos pos1, pos2;
+    pos1.x = pos_.x();
+    pos1.y = pos_.y();
+    pos2.x = pos_.x();
+    pos2.y = pos_.y();
 
     switch (new_or) {
     case LEFT:
-      fy2 += 1;
+      pos2.y += 1;
       break;
     case DOWN:
-      fx2 += 1;
+      pos2.x += 1;
       break;
     case RIGHT:
-      fx2 += 1;
-      fy2 += 1;
-      fx1 += 1;
+      pos2.x += 1;
+      pos2.y += 1;
+      pos1.x += 1;
       break;
     case UP:
-      fx2 += 1;
-      fy2 += 1;
-      fy1 += 1;
+      pos2.x += 1;
+      pos2.y += 1;
+      pos1.y += 1;
       break;
     default:
       break;
     }
 
-    bump = bumped(fx1, fy1, fx2, fy2);
+    bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
     solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
