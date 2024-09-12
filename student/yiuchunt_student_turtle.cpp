@@ -137,6 +137,7 @@ bool studentMoveTurtle(QPointF &pos_, int &new_or) {
         break;
     }
     prev_state = current_state;
+  }
 
   if (solved)
     return false;
