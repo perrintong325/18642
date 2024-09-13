@@ -90,12 +90,12 @@ void nextState(int &current_state, int &new_orientation, bool bump) {
   // if went straight last cycle turn right to find new path
   switch (current_state) {
   case GO: // if in GO state, turn right to find new path
-    rotateDirection(new_orientation, false);
+    rotateDirection(new_orientation, true);
     current_state = CHECKBP;
     break;
   case CHECKBP:
     if (bump) { // if bumped after turn undo turn/turn left
-      rotateDirection(new_orientation, true);
+      rotateDirection(new_orientation, false);
     } else { // if there's no bump, go straight
       current_state = GO;
     }
