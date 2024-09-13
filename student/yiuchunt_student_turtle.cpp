@@ -33,7 +33,7 @@ enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
 // true=the new orientation will hit a wall, false=the new orientation is safe
-bool checkBumped(QPointF &pos_) {
+bool checkBumped(QPointF &pos_, int &new_orientation) {
   position pos1, pos2;
   pos1.x = pos_.x();
   pos1.y = pos_.y();
@@ -78,7 +78,7 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
 
-    bump = checkBumped(pos_);
+    bump = checkBumped(pos_, new_orientation);
     solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
