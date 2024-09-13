@@ -39,6 +39,9 @@ enum state { GO = 1, CHECKBP = 0 };
 bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   static int cycle = 0;
   static int current_state = CHECKBP;
+  static int solved = false;
+  static int bump = false;
+
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
     position pos1, pos2;
@@ -68,8 +71,8 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
       break;
     }
 
-    int bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
-    int solved = atend(pos_.x(), pos_.y());
+    bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+    solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
     switch (current_state) {
