@@ -32,6 +32,39 @@ enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
+// true=the new orientation will hit a wall, false=the new orientation is safe
+bool checkBumped(QPointF &pos_) {
+  position pos1, pos2;
+  pos1.x = pos_.x();
+  pos1.y = pos_.y();
+  pos2.x = pos_.x();
+  pos2.y = pos_.y();
+
+  switch (new_orientation) {
+  case LEFT:
+    pos2.y += 1;
+    break;
+  case DOWN:
+    pos2.x += 1;
+    break;
+  case RIGHT:
+    pos2.x += 1;
+    pos2.y += 1;
+    pos1.x += 1;
+    break;
+  case UP:
+    pos2.x += 1;
+    pos2.y += 1;
+    pos1.y += 1;
+    break;
+  default:
+    break;
+  }
+
+  return bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+}
+
+// this procedure takes the current turtle position and orientation and returns
 // true=submit changes, false=do not submit changes
 // Ground rule -- you are only allowed to call the helper functions "bumped(..)"
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
@@ -39,39 +72,13 @@ enum state { GO = 1, CHECKBP = 0 };
 bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   static int cycle = 0;
   static int current_state = CHECKBP;
-  static int solved = false;
-  static int bump = false;
+  static bool solved = false;
+  static bool bump = true;
 
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
-    position pos1, pos2;
-    pos1.x = pos_.x();
-    pos1.y = pos_.y();
-    pos2.x = pos_.x();
-    pos2.y = pos_.y();
 
-    switch (new_orientation) {
-    case LEFT:
-      pos2.y += 1;
-      break;
-    case DOWN:
-      pos2.x += 1;
-      break;
-    case RIGHT:
-      pos2.x += 1;
-      pos2.y += 1;
-      pos1.x += 1;
-      break;
-    case UP:
-      pos2.x += 1;
-      pos2.y += 1;
-      pos1.y += 1;
-      break;
-    default:
-      break;
-    }
-
-    bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+    bump = checkBumped(pos_);
     solved = atend(pos_.x(), pos_.y());
 
     // if went straight last cycle turn right to find new path
