@@ -64,24 +64,8 @@ bool checkBumped(QPointF &pos_, int &new_orientation) {
   return bumped(pos1.x, pos1.y, pos2.x, pos2.y);
 }
 
-// this procedure takes the current turtle position and orientation and returns
-// true=submit changes, false=do not submit changes
-// Ground rule -- you are only allowed to call the helper functions "bumped(..)"
-// and "atend(..)", and NO other turtle methods or maze methods (no peeking at
-// the maze!)
-bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
-  static int cycle = 0;
-  static int current_state = CHECKBP;
-  static bool solved = false;
-  static bool bump = true;
-
-  ROS_INFO("Turtle update Called  cycle=%f", cycle);
-  if (cycle == 0) {
-
-    bump = checkBumped(pos_, new_orientation);
-    solved = atend(pos_.x(), pos_.y());
-
-    // if went straight last cycle turn right to find new path
+void nextState(int &current_state, int &new_orientation, bool bump) {
+  // if went straight last cycle turn right to find new path
     switch (current_state) {
     case GO:
       switch (new_orientation) {
@@ -127,6 +111,27 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
     default:
       break;
     }
+    return;
+}
+
+// this procedure takes the current turtle position and orientation and returns
+// true=submit changes, false=do not submit changes
+// Ground rule -- you are only allowed to call the helper functions "bumped(..)"
+// and "atend(..)", and NO other turtle methods or maze methods (no peeking at
+// the maze!)
+bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
+  static int cycle = 0;
+  static int current_state = CHECKBP;
+  static bool solved = false;
+  static bool bump = true;
+
+  ROS_INFO("Turtle update Called  cycle=%f", cycle);
+  if (cycle == 0) {
+
+    bump = checkBumped(pos_, new_orientation);
+    solved = atend(pos_.x(), pos_.y());
+
+    nextState(current_state, new_orientation, bump);
 
     ROS_INFO("Orientation=%f  STATE=%f", new_orientation, current_state);
 
