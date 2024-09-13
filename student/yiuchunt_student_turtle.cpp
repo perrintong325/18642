@@ -35,7 +35,7 @@ enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
 // true=the new orientation will hit a wall, false=the new orientation is safe
-void checkBumped(QPointF &pos_, int &new_orientation, bool &bump) {
+void checkBumped(QPointF &pos_, int8_t &new_orientation, bool &bump) {
   position pos1, pos2;
   pos1.x = pos_.x();
   pos1.y = pos_.y();
@@ -71,10 +71,10 @@ void checkBumped(QPointF &pos_, int &new_orientation, bool &bump) {
 // this procedure takes the current orientation and a boolean indicating
 // whether to rotate clockwise or counterclockwise, and returns the new
 // orientation
-void rotateDirection(int &new_orientation, bool clockwise) {
-  const int NUM_DIRECTIONS = 4;
-  const int CLOCKWISE_INCREMENT = 1;
-  const int COUNTERCLOCKWISE_INCREMENT = 3;
+void rotateDirection(int8_t &new_orientation, bool clockwise) {
+  const int8_t NUM_DIRECTIONS = 4;
+  const int8_t CLOCKWISE_INCREMENT = 1;
+  const int8_t COUNTERCLOCKWISE_INCREMENT = 3;
   if (clockwise) {
     new_orientation = (new_orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   } else {
@@ -86,7 +86,7 @@ void rotateDirection(int &new_orientation, bool clockwise) {
 
 // this procedure takes the current state, orientation, and a boolean indicating
 // whether the turtle bumped into a wall, and returns the next state
-void nextState(int &current_state, int &new_orientation, bool bump) {
+void nextState(int8_t &current_state, int8_t &new_orientation, bool bump) {
   // if went straight last cycle turn right to find new path
   switch (current_state) {
   case GO: // if in GO state, turn right to find new path
@@ -109,9 +109,9 @@ void nextState(int &current_state, int &new_orientation, bool bump) {
 
 // this procedure takes the current turtle position, orientation, state, and
 // solved status, and updates the turtle position
-void moveTurtle(QPointF &pos_, int &new_orientation, int &current_state,
+void moveTurtle(QPointF &pos_, int8_t &new_orientation, int8_t &current_state,
                 bool &solved) {
-  static const int MOVE = 1;
+  static const int8_t MOVE = 1;
   switch (current_state) {
   case GO: // move in the new orientation if in GO state
     if (solved == false) {
@@ -142,12 +142,12 @@ void moveTurtle(QPointF &pos_, int &new_orientation, int &current_state,
 // Ground rule -- you are only allowed to call the helper functions "bumped(..)"
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
 // the maze!)
-bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
-  static const int TIMEOUT =
+bool studentMoveTurtle(QPointF &pos_, int8_t &new_orientation) {
+  static const int8_t TIMEOUT =
       4; // bigger number slows down simulation so you can see what's happening
-  static const int CYCLE_DECREASE = 1;
-  static int cycle = 0;
-  static int current_state = CHECKBP;
+  static const int8_t CYCLE_DECREASE = 1;
+  static int8_t cycle = 0;
+  static int8_t current_state = CHECKBP;
   static bool solved = false;
   static bool bump = true;
 
