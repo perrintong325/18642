@@ -33,7 +33,7 @@ enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
 // true=the new orientation will hit a wall, false=the new orientation is safe
-bool checkBumped(QPointF &pos_, int &new_orientation) {
+void checkBumped(QPointF &pos_, int &new_orientation, bool &bump) {
   position pos1, pos2;
   pos1.x = pos_.x();
   pos1.y = pos_.y();
@@ -61,57 +61,47 @@ bool checkBumped(QPointF &pos_, int &new_orientation) {
     break;
   }
 
-  return bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+  bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+}
+
+void rotateDirection(int &new_orientation, bool clockwise) {
+  switch (new_orientation) {
+  case LEFT:
+    new_orientation = clockwise ? UP : DOWN;
+    break;
+  case DOWN:
+    new_orientation = clockwise ? LEFT : RIGHT;
+    break;
+  case RIGHT:
+    new_orientation = clockwise ? DOWN : UP;
+    break;
+  case UP:
+    new_orientation = clockwise ? RIGHT : LEFT;
+    break;
+  default:
+    break;
+  }
+  return;
 }
 
 void nextState(int &current_state, int &new_orientation, bool bump) {
   // if went straight last cycle turn right to find new path
-    switch (current_state) {
-    case GO:
-      switch (new_orientation) {
-      case LEFT:
-        new_orientation = DOWN;
-        break;
-      case DOWN:
-        new_orientation = RIGHT;
-        break;
-      case RIGHT:
-        new_orientation = UP;
-        break;
-      case UP:
-        new_orientation = LEFT;
-        break;
-      default:
-        break;
-      }
-      current_state = CHECKBP;
-      break;
-    case CHECKBP:
-      if (bump) { // if bumped after turn undo turn/turn left
-        switch (new_orientation) {
-        case LEFT:
-          new_orientation = UP;
-          break;
-        case DOWN:
-          new_orientation = LEFT;
-          break;
-        case RIGHT:
-          new_orientation = DOWN;
-          break;
-        case UP:
-          new_orientation = RIGHT;
-          break;
-        default:
-          break;
-        }
-      } else { // if there's no bump, go straight
-        current_state = GO;
-      }
-      break;
-    default:
-      break;
+  switch (current_state) {
+  case GO:
+    rotateDirection(new_orientation, false);
+    current_state = CHECKBP;
+    break;
+  case CHECKBP:
+    if (bump) { // if bumped after turn undo turn/turn left
+      rotateDirection(new_orientation, true);
+    } else { // if there's no bump, go straight
+      current_state = GO;
     }
-    return;
+    break;
+  default:
+    break;
+  }
+  return;
 }
 
 // this procedure takes the current turtle position and orientation and returns
@@ -128,7 +118,7 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
 
-    bump = checkBumped(pos_, new_orientation);
+    checkBumped(pos_, new_orientation, bump);
     solved = atend(pos_.x(), pos_.y());
 
     nextState(current_state, new_orientation, bump);
