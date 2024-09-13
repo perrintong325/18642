@@ -55,69 +55,75 @@ void checkBumped(QPointF &pos_, int &new_orientation, bool &bump) {
     pos1.y += 1;
     break;
   default:
+    ROS_ERROR("Invalid orientation when checking bump");
     break;
   }
 
   bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
 }
 
-void rotateLeft(int &new_orientation) {
-  switch (new_orientation) {
-  case LEFT:
-    new_orientation = DOWN;
-    break;
-  case DOWN:
-    new_orientation = RIGHT;
-    break;
-  case RIGHT:
-    new_orientation = UP;
-    break;
-  case UP:
-    new_orientation = LEFT;
-    break;
-  default:
-    ROS_ERROR("Invalid orientation when rotating left");
-    break;
+void rotateDirection(int &new_orientation, bool clockwise) {
+  // switch (new_orientation) {
+  // case LEFT:
+  //   if (clockwise) {
+  //     new_orientation = UP;
+  //   } else {
+  //     new_orientation = DOWN;
+  //   }
+  //   break;
+  // case DOWN:
+  //   if (clockwise) {
+  //     new_orientation = LEFT;
+  //   } else {
+  //     new_orientation = RIGHT;
+  //   }
+  //   break;
+  // case RIGHT:
+  //   if (clockwise) {
+  //     new_orientation = DOWN;
+  //   } else {
+  //     new_orientation = UP;
+  //   }
+  //   break;
+  // case UP:
+  //   if (clockwise) {
+  //     new_orientation = RIGHT;
+  //   } else {
+  //     new_orientation = LEFT;
+  //   }
+  //   break;
+  // default:
+  //   ROS_ERROR("Invalid orientation when rotating");
+  //   break;
+  // }
+  // return;
+  const int NUM_DIRECTIONS = 4;
+  const int CLOCKWISE_INCREMENT = 1;
+  const int COUNTERCLOCKWISE_INCREMENT = 3;
+  if (clockwise) {
+    new_orientation = (new_orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+  } else {
+    new_orientation =
+        (new_orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   }
-  return;
-}
-
-void rotateRight(int &new_orientation) {
-  switch (new_orientation) {
-  case LEFT:
-    new_orientation = UP;
-    break;
-  case DOWN:
-    new_orientation = LEFT;
-    break;
-  case RIGHT:
-    new_orientation = DOWN;
-    break;
-  case UP:
-    new_orientation = RIGHT;
-    break;
-  default:
-    ROS_ERROR("Invalid orientation when rotating right");
-    break;
-  }
-  return;
 }
 
 void nextState(int &current_state, int &new_orientation, bool bump) {
   // if went straight last cycle turn right to find new path
   switch (current_state) {
   case GO:
-    rotateLeft(new_orientation);
+    rotateDirection(new_orientation, false);
     current_state = CHECKBP;
     break;
   case CHECKBP:
     if (bump) { // if bumped after turn undo turn/turn left
-      rotateRight(new_orientation);
+      rotateDirection(new_orientation, true);
     } else { // if there's no bump, go straight
       current_state = GO;
     }
     break;
   default:
+    ROS_ERROR("Invalid state");
     break;
   }
   return;
@@ -126,28 +132,28 @@ void nextState(int &current_state, int &new_orientation, bool bump) {
 void moveTurtle(QPointF &pos_, int &new_orientation, int &current_state,
                 bool &solved) {
   switch (current_state) {
-    case GO: // move in the new orientation if in GO state
-      if (solved == false) {
-        if (new_orientation == DOWN) {
-          pos_.setY(pos_.y() - 1);
-        }
-        if (new_orientation == RIGHT) {
-          pos_.setX(pos_.x() + 1);
-        }
-        if (new_orientation == UP) {
-          pos_.setY(pos_.y() + 1);
-        }
-        if (new_orientation == LEFT) {
-          pos_.setX(pos_.x() - 1);
-        }
+  case GO: // move in the new orientation if in GO state
+    if (solved == false) {
+      if (new_orientation == DOWN) {
+        pos_.setY(pos_.y() - 1);
       }
-      break;
-    case CHECKBP:
-      break;
-    default:
-      ROS_ERROR("Invalid state");
-      break;
+      if (new_orientation == RIGHT) {
+        pos_.setX(pos_.x() + 1);
+      }
+      if (new_orientation == UP) {
+        pos_.setY(pos_.y() + 1);
+      }
+      if (new_orientation == LEFT) {
+        pos_.setX(pos_.x() - 1);
+      }
     }
+    break;
+  case CHECKBP:
+    break;
+  default:
+    ROS_ERROR("Invalid state");
+    break;
+  }
 }
 
 // this procedure takes the current turtle position and orientation and returns
