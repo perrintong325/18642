@@ -18,14 +18,19 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 
 // OK TO MODIFY BELOW THIS LINE
 
+// struct to store the position of the turtle
 struct Position {
   float x;
   float y;
 };
 
+// typedef for the position struct
 typedef Position position;
 
+// enum for the direction the turtle is facing
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
+
+// enum for the state of the turtle
 enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
@@ -60,43 +65,13 @@ void checkBumped(QPointF &pos_, int &new_orientation, bool &bump) {
   }
 
   bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+  return;
 }
 
+// this procedure takes the current orientation and a boolean indicating
+// whether to rotate clockwise or counterclockwise, and returns the new
+// orientation
 void rotateDirection(int &new_orientation, bool clockwise) {
-  // switch (new_orientation) {
-  // case LEFT:
-  //   if (clockwise) {
-  //     new_orientation = UP;
-  //   } else {
-  //     new_orientation = DOWN;
-  //   }
-  //   break;
-  // case DOWN:
-  //   if (clockwise) {
-  //     new_orientation = LEFT;
-  //   } else {
-  //     new_orientation = RIGHT;
-  //   }
-  //   break;
-  // case RIGHT:
-  //   if (clockwise) {
-  //     new_orientation = DOWN;
-  //   } else {
-  //     new_orientation = UP;
-  //   }
-  //   break;
-  // case UP:
-  //   if (clockwise) {
-  //     new_orientation = RIGHT;
-  //   } else {
-  //     new_orientation = LEFT;
-  //   }
-  //   break;
-  // default:
-  //   ROS_ERROR("Invalid orientation when rotating");
-  //   break;
-  // }
-  // return;
   const int NUM_DIRECTIONS = 4;
   const int CLOCKWISE_INCREMENT = 1;
   const int COUNTERCLOCKWISE_INCREMENT = 3;
@@ -106,12 +81,15 @@ void rotateDirection(int &new_orientation, bool clockwise) {
     new_orientation =
         (new_orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   }
+  return;
 }
 
+// this procedure takes the current state, orientation, and a boolean indicating
+// whether the turtle bumped into a wall, and returns the next state
 void nextState(int &current_state, int &new_orientation, bool bump) {
   // if went straight last cycle turn right to find new path
   switch (current_state) {
-  case GO:
+  case GO: // if in GO state, turn right to find new path
     rotateDirection(new_orientation, false);
     current_state = CHECKBP;
     break;
@@ -129,22 +107,25 @@ void nextState(int &current_state, int &new_orientation, bool bump) {
   return;
 }
 
+// this procedure takes the current turtle position, orientation, state, and
+// solved status, and updates the turtle position
 void moveTurtle(QPointF &pos_, int &new_orientation, int &current_state,
                 bool &solved) {
+  static const int MOVE = 1;
   switch (current_state) {
   case GO: // move in the new orientation if in GO state
     if (solved == false) {
       if (new_orientation == DOWN) {
-        pos_.setY(pos_.y() - 1);
+        pos_.setY(pos_.y() - MOVE);
       }
       if (new_orientation == RIGHT) {
-        pos_.setX(pos_.x() + 1);
+        pos_.setX(pos_.x() + MOVE);
       }
       if (new_orientation == UP) {
-        pos_.setY(pos_.y() + 1);
+        pos_.setY(pos_.y() + MOVE);
       }
       if (new_orientation == LEFT) {
-        pos_.setX(pos_.x() - 1);
+        pos_.setX(pos_.x() - MOVE);
       }
     }
     break;
@@ -164,6 +145,7 @@ void moveTurtle(QPointF &pos_, int &new_orientation, int &current_state,
 bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   static const int TIMEOUT =
       4; // bigger number slows down simulation so you can see what's happening
+  static const int CYCLE_DECREASE = 1;
   static int cycle = 0;
   static int current_state = CHECKBP;
   static bool solved = false;
@@ -171,7 +153,6 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
 
   ROS_INFO("Turtle update Called  cycle=%f", cycle);
   if (cycle == 0) {
-
     checkBumped(pos_, new_orientation, bump);
     solved = atend(pos_.x(), pos_.y());
 
@@ -187,7 +168,7 @@ bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
   if (solved) {
     return false;
   } else {
-    cycle -= 1;
+    cycle -= CYCLE_DECREASE;
     return false;
   }
 }
