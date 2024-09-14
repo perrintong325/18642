@@ -35,6 +35,7 @@ enum state { GO = 1, CHECKBP = 0 };
 
 // this procedure takes the current turtle position and orientation and returns
 // true=the new orientation will hit a wall, false=the new orientation is safe
+// and updates bump to true if the turtle bumped into a wall
 void checkBumped(QPointF &pos_, int8_t &new_orientation, bool &bump) {
   position pos1, pos2;
   pos1.x = pos_.x();
@@ -162,13 +163,13 @@ bool studentMoveTurtle(QPointF &pos_, int8_t &new_orientation) {
 
     moveTurtle(pos_, new_orientation, current_state, solved);
     cycle = TIMEOUT;
-    return true;
+    return true; // submit changes
   }
 
   if (solved) {
-    return false;
+    return false; // don't submit changes
   } else {
-    cycle -= CYCLE_DECREASE;
-    return false;
+    cycle -= CYCLE_DECREASE; // decrease cycle
+    return false;          // don't submit changes  
   }
 }
