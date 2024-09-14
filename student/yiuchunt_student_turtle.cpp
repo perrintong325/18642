@@ -143,7 +143,7 @@ void moveTurtle(QPointF &pos_, int32_t &new_orientation, int32_t &current_state,
 // Ground rule -- you are only allowed to call the helper functions "bumped(..)"
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
 // the maze!)
-bool studentMoveTurtle(QPointF &pos_, int &new_orientation) {
+bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
   static const int32_t TIMEOUT =
       4; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
