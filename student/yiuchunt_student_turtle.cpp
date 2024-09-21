@@ -185,7 +185,7 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
 
     ROS_INFO("Orientation=%d  STATE=%d", new_orientation, current_state);
 
-    moveTurtle(pos_, new_orientation, current_state, solved, position pos);
+    moveTurtle(pos_, new_orientation, current_state, solved, pos);
 
     cycle = TIMEOUT;
     return true; // submit changes
