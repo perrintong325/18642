@@ -181,13 +181,10 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
     position currentPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
-    // if (initVisit) {
-    //   ROS_INFO("init pos: (%d, %d)", currentPos.x, currentPos.y);
-    //   updateVisits({5,0});
-    //   initVisit = false;
-    // }
-    updateVisits({5,0});
-    ROS_INFO("%d", visitCount[5][0]);
+    if (initVisit) {
+      initVisit = false;
+      updateVisits(currentPos);
+    }
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
 
