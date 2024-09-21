@@ -100,9 +100,9 @@ void rotateDirection(int32_t &new_orientation, bool clockwise) {
 void updateVisits(position pos) {
   if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
     visitCount[pos.x][pos.y]++;
-    visitCount[5][0]++;
+    ROS_INFO("Visits to cell (%d, %d): %d", pos.x, pos.y,
+             visitCount[pos.x][pos.y]);
     displayVisits(visitCount[pos.x][pos.y]);
-    displayVisits(visitCount[5][0]);
   }
 }
 
@@ -183,7 +183,7 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
     currentPos.y = static_cast<int32_t>(pos_.y());
     if (initVisit) {
       initVisit = false;
-      updateVisits(currentPos);
+      displayVisits(1);
     }
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
