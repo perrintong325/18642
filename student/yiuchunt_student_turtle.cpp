@@ -191,14 +191,14 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0) {
-    position currentPos;
+    position currentPos, mapPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
 
     // Update the visit count and call displayVisits
-    int32_t localX = MAZE_CENTER + currentPos.x;
-    int32_t localY = MAZE_CENTER + currentPos.y;
-    updateVisits(localX, localY);
+    mapPos.x = MAZE_CENTER + currentPos.x;
+    mapPos.y = MAZE_CENTER + currentPos.y;
+    updateVisits(mapPos);
 
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
