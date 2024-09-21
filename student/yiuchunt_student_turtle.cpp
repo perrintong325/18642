@@ -34,11 +34,11 @@ enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 enum state { GO = 1, CHECKBUMP = 0 };
 
 // Define the maze size
-const int MAZE_WIDTH = 12;
-const int MAZE_HEIGHT = 12;
+const int32_t MAZE_SIZE = 23;
+const int32_t MAZE_CENTER = MAZE_SIZE / 2;
 
-// Internal array to keep track of the number of visits to each cell
-int visitCount[MAZE_WIDTH][MAZE_HEIGHT] = {0};
+// File-static array to keep track of the number of visits to each cell
+static int visitCount[MAZE_SIZE][MAZE_SIZE] = {0};
 
 // Function to display the number of visits
 void displayVisits(int visits);
@@ -96,14 +96,27 @@ void rotateDirection(int32_t &new_orientation, bool clockwise) {
   }
   return;
 }
-
+// Function to update the visit count and call displayVisits
 void updateVisits(position pos) {
   if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
     visitCount[pos.x][pos.y]++;
-    ROS_INFO("Visits to cell (%d, %d): %d", pos.x, pos.y,
-             visitCount[pos.x][pos.y]);
     displayVisits(visitCount[pos.x][pos.y]);
   }
+}
+
+// Getter for visit count
+int32_t getVisitCount(position pos) {
+    if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
+        return visitCount[pos.x][pos.y];
+    }
+    return -1; // Return -1 for invalid coordinates
+}
+
+// Setter for visit count
+void setVisitCount(position pos, int32_t count) {
+    if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
+        visitCount[x][y] = count;
+    }
 }
 
 // this procedure takes the current state, orientation, and a boolean indicating
@@ -115,7 +128,7 @@ void nextState(int32_t &current_state, int32_t &new_orientation, bool bump,
   case GO: // if in GO state, turn right to find new path
     rotateDirection(new_orientation, true);
     current_state = CHECKBUMP;
-    updateVisits(pos);
+    // updateVisits(pos);
     break;
   case CHECKBUMP:
     if (bump) { // if bumped after turn undo turn/turn left
@@ -181,10 +194,12 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
     position currentPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
-    if (initVisit) {
-      initVisit = false;
-      displayVisits(1);
-    }
+
+    // Update the visit count and call displayVisits
+    int32_t localX = MAZE_CENTER + currentPos.x;
+    int32_t localY = MAZE_CENTER + currentPos.y;
+    updateVisits(localX, localY);
+
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
 
