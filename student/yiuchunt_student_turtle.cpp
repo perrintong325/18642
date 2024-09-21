@@ -178,9 +178,10 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
 
     moveTurtle(pos_, new_orientation, current_state, solved);
 
-    if (x >= 0 && x < MAZE_WIDTH && y >= 0 && y < MAZE_HEIGHT) {
-      visitCount[x][y]++;
-      displayVisits(visitCount[x][y]);
+    if (currentPos.x >= 0 && currentPos.x < MAZE_WIDTH && currentPos.y >= 0 &&
+        currentPos.y < MAZE_HEIGHT) {
+      visitCount[currentPos.x][currentPos.y]++;
+      displayVisits(visitCount[currentPos.x][currentPos.y]);
     }
     cycle = TIMEOUT;
     return true; // submit changes
