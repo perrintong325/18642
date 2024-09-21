@@ -20,8 +20,8 @@ turtleMove studentTurtleStep(bool bumped) { return MOVE; }
 
 // struct to store the position of the turtle
 struct Position {
-  float x;
-  float y;
+  int32_t x;
+  int32_t y;
 };
 
 // typedef for the position struct
@@ -31,41 +31,53 @@ typedef Position position;
 enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
 
 // enum for the state of the turtle
-enum state { GO = 1, CHECKBP = 0 };
+enum state { GO = 1, CHECKBUMP = 0 };
+
+// Define the maze size
+const int MAZE_WIDTH = 12;
+const int MAZE_HEIGHT = 12;
+
+// Internal array to keep track of the number of visits to each cell
+int visitCount[MAZE_WIDTH][MAZE_HEIGHT] = {0};
+
+// Function to display the number of visits
+void displayVisits(int visits);
 
 // this procedure takes the current turtle position and orientation and returns
 // true=the new orientation will hit a wall, false=the new orientation is safe
 // and updates bump to true if the turtle bumped into a wall
-void checkBumped(QPointF &pos_, int32_t &new_orientation, bool &bump) {
-  position pos1, pos2;
-  pos1.x = pos_.x();
-  pos1.y = pos_.y();
-  pos2.x = pos_.x();
-  pos2.y = pos_.y();
+void checkBumped(position pos_, int32_t &new_orientation, bool &bump) {
+  static const int32_t MOVE = 1;
+
+  position currentPos, nextPos;
+  currentPos.x = pos_.x();
+  currentPos.y = pos_.y();
+  nextPos.x = pos_.x();
+  nextPos.y = pos_.y();
 
   switch (new_orientation) {
   case LEFT:
-    pos2.y += 1;
+    nextPos.y += MOVE;
     break;
   case DOWN:
-    pos2.x += 1;
+    nextPos.x += MOVE;
     break;
   case RIGHT:
-    pos2.x += 1;
-    pos2.y += 1;
-    pos1.x += 1;
+    nextPos.x += MOVE;
+    nextPos.y += MOVE;
+    currentPos.x += MOVE;
     break;
   case UP:
-    pos2.x += 1;
-    pos2.y += 1;
-    pos1.y += 1;
+    nextPos.x += MOVE;
+    nextPos.y += MOVE;
+    currentPos.y += MOVE;
     break;
   default:
     ROS_ERROR("Invalid orientation when checking bump");
     break;
   }
 
-  bump = bumped(pos1.x, pos1.y, pos2.x, pos2.y);
+  bump = bumped(currentPos.x, currentPos.y, nextPos.x, nextPos.y);
   return;
 }
 
@@ -92,9 +104,9 @@ void nextState(int32_t &current_state, int32_t &new_orientation, bool bump) {
   switch (current_state) {
   case GO: // if in GO state, turn right to find new path
     rotateDirection(new_orientation, true);
-    current_state = CHECKBP;
+    current_state = CHECKBUMP;
     break;
-  case CHECKBP:
+  case CHECKBUMP:
     if (bump) { // if bumped after turn undo turn/turn left
       rotateDirection(new_orientation, false);
     } else { // if there's no bump, go straight
@@ -130,7 +142,7 @@ void moveTurtle(QPointF &pos_, int32_t &new_orientation, int32_t &current_state,
       }
     }
     break;
-  case CHECKBP:
+  case CHECKBUMP:
     break;
   default:
     ROS_ERROR("Invalid state");
@@ -148,20 +160,28 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
       4; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
   static int32_t cycle = 0;
-  static int32_t current_state = CHECKBP;
+  static int32_t current_state = CHECKBUMP;
   static bool solved = false;
   static bool bump = true;
 
-  ROS_INFO("Turtle update Called  cycle=%f", cycle);
+  ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0) {
-    checkBumped(pos_, new_orientation, bump);
-    solved = atend(pos_.x(), pos_.y());
+    position currentPos;
+    currentPos.x = static_cast<int32_t>(pos_.x());
+    currentPos.y = static_cast<int32_t>(pos_.y());
+    checkBumped(currentPos, new_orientation, bump);
+    solved = atend(currentPos.x, currentPos.y);
 
     nextState(current_state, new_orientation, bump);
 
-    ROS_INFO("Orientation=%f  STATE=%f", new_orientation, current_state);
+    ROS_INFO("Orientation=%d  STATE=%d", new_orientation, current_state);
 
     moveTurtle(pos_, new_orientation, current_state, solved);
+
+    if (x >= 0 && x < MAZE_WIDTH && y >= 0 && y < MAZE_HEIGHT) {
+      visitCount[x][y]++;
+      displayVisits(visitCount[x][y]);
+    }
     cycle = TIMEOUT;
     return true; // submit changes
   }
@@ -170,6 +190,6 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
     return false; // don't submit changes
   } else {
     cycle -= CYCLE_DECREASE; // decrease cycle
-    return false;          // don't submit changes  
+    return false;            // don't submit changes
   }
 }
