@@ -98,7 +98,7 @@ void rotateDirection(int32_t &new_orientation, bool clockwise) {
 }
 // Function to update the visit count and call displayVisits
 void updateVisits(position pos) {
-  if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
+  if (pos.x >= 0 && pos.x < MAZE_SIZE && pos.y >= 0 && pos.y < MAZE_SIZE) {
     visitCount[pos.x][pos.y]++;
     displayVisits(visitCount[pos.x][pos.y]);
   }
@@ -106,7 +106,7 @@ void updateVisits(position pos) {
 
 // Getter for visit count
 int32_t getVisitCount(position pos) {
-    if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
+    if (pos.x >= 0 && pos.x < MAZE_SIZE && pos.y >= 0 && pos.y < MAZE_SIZE) {
         return visitCount[pos.x][pos.y];
     }
     return -1; // Return -1 for invalid coordinates
@@ -114,8 +114,8 @@ int32_t getVisitCount(position pos) {
 
 // Setter for visit count
 void setVisitCount(position pos, int32_t count) {
-    if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
-        visitCount[x][y] = count;
+    if (pos.x >= 0 && pos.x < MAZE_SIZE && pos.y >= 0 && pos.y < MAZE_SIZE) {
+        visitCount[pos.x][pos.y] = count;
     }
 }
 
