@@ -100,9 +100,9 @@ void rotateDirection(int32_t &new_orientation, bool clockwise) {
 void updateVisits(position pos) {
   if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
     visitCount[pos.x][pos.y]++;
-    ROS_INFO("Visits to cell (%d, %d): %d", pos.x, pos.y,
-             visitCount[pos.x][pos.y]);
+    visitCount[5][0]++;
     displayVisits(visitCount[pos.x][pos.y]);
+    displayVisits(visitCount[5][0]);
   }
 }
 
