@@ -128,7 +128,10 @@ void nextState(int32_t &current_state, int32_t &new_orientation, bool bump,
   case GO: // if in GO state, turn right to find new path
     rotateDirection(new_orientation, true);
     current_state = CHECKBUMP;
-    // updateVisits(pos);
+    // Update the visit count and call displayVisits
+    mapPos.x = MAZE_CENTER + currentPos.x;
+    mapPos.y = MAZE_CENTER + currentPos.y;
+    updateVisits(mapPos);
     break;
   case CHECKBUMP:
     if (bump) { // if bumped after turn undo turn/turn left
@@ -194,11 +197,6 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
     position currentPos, mapPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
-
-    // Update the visit count and call displayVisits
-    mapPos.x = MAZE_CENTER + currentPos.x;
-    mapPos.y = MAZE_CENTER + currentPos.y;
-    updateVisits(mapPos);
 
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
