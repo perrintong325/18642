@@ -174,12 +174,17 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
   static int32_t current_state = CHECKBUMP;
   static bool solved = false;
   static bool bump = true;
+  static bool initVisit = true;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0) {
     position currentPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
+    if (initVisit) {
+      updateVisits(currentPos);
+      initVisit = false;
+    }
     checkBumped(currentPos, new_orientation, bump);
     solved = atend(currentPos.x, currentPos.y);
 
