@@ -50,10 +50,10 @@ void checkBumped(position pos_, int32_t &new_orientation, bool &bump) {
   static const int32_t MOVE = 1;
 
   position currentPos, nextPos;
-  currentPos.x = pos_.x();
-  currentPos.y = pos_.y();
-  nextPos.x = pos_.x();
-  nextPos.y = pos_.y();
+  currentPos.x = pos_.x;
+  currentPos.y = pos_.y;
+  nextPos.x = pos_.x;
+  nextPos.y = pos_.y;
 
   switch (new_orientation) {
   case LEFT:
