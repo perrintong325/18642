@@ -120,10 +120,17 @@ void nextState(int32_t &current_state, int32_t &new_orientation, bool bump) {
   return;
 }
 
+void updateVisits(position pos) {
+  if (pos.x >= 0 && pos.x < MAZE_WIDTH && pos.y >= 0 && pos.y < MAZE_HEIGHT) {
+    visitCount[pos.x][pos.y]++;
+    displayVisits(visitCount[pos.x][pos.y]);
+  }
+}
+
 // this procedure takes the current turtle position, orientation, state, and
 // solved status, and updates the turtle position
 void moveTurtle(QPointF &pos_, int32_t &new_orientation, int32_t &current_state,
-                bool &solved) {
+                bool &solved, position pos) {
   static const int32_t MOVE = 1;
   switch (current_state) {
   case GO: // move in the new orientation if in GO state
@@ -140,6 +147,7 @@ void moveTurtle(QPointF &pos_, int32_t &new_orientation, int32_t &current_state,
       if (new_orientation == LEFT) {
         pos_.setX(pos_.x() - MOVE);
       }
+      updateVisits(pos);
     }
     break;
   case CHECKBUMP:
@@ -176,13 +184,8 @@ bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
 
     ROS_INFO("Orientation=%d  STATE=%d", new_orientation, current_state);
 
-    moveTurtle(pos_, new_orientation, current_state, solved);
+    moveTurtle(pos_, new_orientation, current_state, solved, currentPos);
 
-    if (currentPos.x >= 0 && currentPos.x < MAZE_WIDTH && currentPos.y >= 0 &&
-        currentPos.y < MAZE_HEIGHT) {
-      visitCount[currentPos.x][currentPos.y]++;
-      displayVisits(visitCount[currentPos.x][currentPos.y]);
-    }
     cycle = TIMEOUT;
     return true; // submit changes
   }
