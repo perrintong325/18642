@@ -115,13 +115,13 @@ void nextState(int32_t &current_state, int32_t &new_orientation, bool bump,
   case GO: // if in GO state, turn right to find new path
     rotateDirection(new_orientation, true);
     current_state = CHECKBUMP;
-    updateVisits(pos);
     break;
   case CHECKBUMP:
     if (bump) { // if bumped after turn undo turn/turn left
       rotateDirection(new_orientation, false);
     } else { // if there's no bump, go straight
       current_state = GO;
+      updateVisits(pos);
     }
     break;
   default:
