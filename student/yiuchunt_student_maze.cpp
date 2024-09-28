@@ -42,7 +42,7 @@ bool moveTurtle(QPointF& pos_, int& new_orientation)
 
   bool bumped = checkBumped(currentPos, new_orientation); // Replace with your own procedure
   turtleMove nextMove = studentTurtleStep(bumped); // define your own turtleMove enum or structure
-  pos_ = translatePos(pos_, nextMove);
+  pos_ = translatePos(pos_, nextMove, new_orientation);
   new_orientation = translateOrnt(new_orientation, nextMove);
 
   // REPLACE THE FOLLOWING LINE IN PROJECT 5
@@ -55,25 +55,25 @@ bool moveTurtle(QPointF& pos_, int& new_orientation)
  * based on the move
  */
 QPointF translatePos(QPointF pos_, turtleMove nextMove, int32_t new_orientation) {
-  static const int32_t MOVE = 1;
+  static const int32_t movement = 1;
   switch (nextMove) {
   case TURN_LEFT:
     return pos_;
   case TURN_RIGHT:
-    updateVisits(pos_);
+    updateVisits({pos_.x(), pos_.y()});
     return pos_;
   case MOVE:
-    if (new_orientation == DOWN) {
-      pos_.setY(pos_.y() - MOVE);
+    if (new_orientation == SOUTH) {
+      pos_.setY(pos_.y() - movement);
     }
-    if (new_orientation == RIGHT) {
-      pos_.setX(pos_.x() + MOVE);
+    if (new_orientation == EAST) {
+      pos_.setX(pos_.x() + movement);
     }
-    if (new_orientation == UP) {
-      pos_.setY(pos_.y() + MOVE);
+    if (new_orientation == NORTH) {
+      pos_.setY(pos_.y() + movement);
     }
-    if (new_orientation == LEFT) {
-      pos_.setX(pos_.x() - MOVE);
+    if (new_orientation == WEST) {
+      pos_.setX(pos_.x() - movement);
     }
     return pos_;
   case NO_MOVE:
@@ -107,8 +107,8 @@ int translateOrnt(int orientation, turtleMove nextMove) {
   }
 }
 
-void checkBumped(position pos_, int32_t &new_orientation) {
-  static const int32_t MOVE = 1;
+bool checkBumped(position pos_, int32_t &new_orientation) {
+  static const int32_t movement = 1;
 
   position currentPos, nextPos;
   currentPos.x = pos_.x;
@@ -117,21 +117,21 @@ void checkBumped(position pos_, int32_t &new_orientation) {
   nextPos.y = pos_.y;
 
   switch (new_orientation) {
-  case LEFT:
-    nextPos.y += MOVE;
+  case WEST:
+    nextPos.y += movement;
     break;
-  case DOWN:
-    nextPos.x += MOVE;
+  case SOUTH:
+    nextPos.x += movement;
     break;
-  case RIGHT:
-    nextPos.x += MOVE;
-    nextPos.y += MOVE;
-    currentPos.x += MOVE;
+  case EAST:
+    nextPos.x += movement;
+    nextPos.y += movement;
+    currentPos.x += movement;
     break;
-  case UP:
-    nextPos.x += MOVE;
-    nextPos.y += MOVE;
-    currentPos.y += MOVE;
+  case NORTH:
+    nextPos.x += movement;
+    nextPos.y += movement;
+    currentPos.y += movement;
     break;
   default:
     ROS_ERROR("Invalid orientation when checking bump");
