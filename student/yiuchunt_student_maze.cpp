@@ -40,13 +40,11 @@ bool moveTurtle(QPointF& pos_, int& new_orientation)
   currentPos.x = static_cast<int32_t>(pos_.x());
   currentPos.y = static_cast<int32_t>(pos_.y());
 
-  bool bumped = checkBumped(currentPos, new_orientation); // Replace with your own procedure
-  turtleMove nextMove = studentTurtleStep(bumped); // define your own turtleMove enum or structure
+  bool bumped = checkBumped(currentPos, new_orientation);
+  turtleMove nextMove = studentTurtleStep(bumped);
   pos_ = translatePos(pos_, nextMove, new_orientation);
   new_orientation = translateOrnt(new_orientation, nextMove);
 
-  // REPLACE THE FOLLOWING LINE IN PROJECT 5
-  // return studentMoveTurtle(pos_, new_orientation);
   return !atend(currentPos.x, currentPos.y);
 }
 
@@ -60,7 +58,10 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove, int32_t new_orientation)
   case TURN_LEFT:
     return pos_;
   case TURN_RIGHT:
-    updateVisits({pos_.x(), pos_.y()});
+    position currentPos;
+    currentPos.x = static_cast<int32_t>(pos_.x());
+    currentPos.y = static_cast<int32_t>(pos_.y());
+    updateVisits(currentPos);
     return pos_;
   case MOVE:
     if (new_orientation == SOUTH) {
