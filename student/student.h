@@ -16,12 +16,28 @@ void displayVisits(int visits);
 bool moveTurtle(QPointF& pos_, int& nw_or);
 
 // Scope-preserving changes to these lines permitted (see p5 writeup)
-enum turtleMove {MOVE};
+enum turtleMove { TURN_LEFT, TURN_RIGHT, MOVE, NO_MOVE };
 QPointF translatePos(QPointF pos_, turtleMove nextMove);
 int translateOrnt(int orientation, turtleMove nextMove);
 turtleMove studentTurtleStep(bool bumped);
 
 // OK to change below this line
 bool studentMoveTurtle(QPointF& pos_, int& nw_or);
+
+// struct to store the position of the turtle
+struct Position {
+  int32_t x;
+  int32_t y;
+};
+
+// typedef for the position struct
+typedef Position position;
+
+// enum for the direction the turtle is facing
+enum direction { LEFT = 0, DOWN = 1, RIGHT = 2, UP = 3 };
+
+// enum for the state of the turtle
+// enum state { GO = 1, CHECKBUMP = 0 };
+enum state { FORWARD = 1, RIGHT = 2, LEFT = 3}
 
 
