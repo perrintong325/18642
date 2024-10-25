@@ -1,4 +1,4 @@
-/* 
+/*
  * Originally by Philip Koopman (koopman@cmu.edu)
  * and Milda Zizyte (milda@cmu.edu)
  *
@@ -30,38 +30,41 @@ const int32_t MAP_SIZE = 12;
 static int visitCount[MAP_SIZE][MAP_SIZE] = {0};
 
 /*
- * This procedure takes the current turtle position and orientation and returns true=accept changes, false=do not accept changes
- * Ground rule -- you are only allowed to call the three helper functions defined in student.h, and NO other turtle methods or maze methods (no peeking at the maze!)
- * This file interfaces with functions in student_turtle.cpp
+ * This procedure takes the current turtle position and orientation and returns
+ * true=accept changes, false=do not accept changes Ground rule -- you are only
+ * allowed to call the three helper functions defined in student.h, and NO other
+ * turtle methods or maze methods (no peeking at the maze!) This file interfaces
+ * with functions in student_turtle.cpp
  */
-bool moveTurtle(QPointF& pos_, int& new_orientation)
-{
+bool moveTurtle(QPointF &pos_, int &new_orientation) {
+  static bool stopMove = false;
   position currentPos;
   currentPos.x = static_cast<int32_t>(pos_.x());
   currentPos.y = static_cast<int32_t>(pos_.y());
 
   bool bumped = checkBumped(currentPos, new_orientation);
-  turtleMove nextMove = studentTurtleStep(bumped);
+  turtleMove nextMove = studentTurtleStep(bumped, stopMove);
   pos_ = translatePos(pos_, nextMove, new_orientation);
   new_orientation = translateOrnt(new_orientation, nextMove);
 
-  return !atend(currentPos.x, currentPos.y);
+  if (atend(currentPos.x, currentPos.y)) {
+    stopMove = true;
+    return false;
+  }
+  return true;
 }
 
 /*
  * Takes a position and a turtleMove and returns a new position
  * based on the move
  */
-QPointF translatePos(QPointF pos_, turtleMove nextMove, int32_t new_orientation) {
+QPointF translatePos(QPointF pos_, turtleMove nextMove,
+                     int32_t new_orientation) {
   static const int32_t movement = 1;
   switch (nextMove) {
   case TURN_LEFT:
     return pos_;
   case TURN_RIGHT:
-    position currentPos;
-    currentPos.x = static_cast<int32_t>(pos_.x());
-    currentPos.y = static_cast<int32_t>(pos_.y());
-    updateVisits(currentPos);
     return pos_;
   case MOVE:
     if (new_orientation == SOUTH) {
@@ -76,6 +79,10 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove, int32_t new_orientation)
     if (new_orientation == WEST) {
       pos_.setX(pos_.x() - movement);
     }
+    position currentPos;
+    currentPos.x = static_cast<int32_t>(pos_.x());
+    currentPos.y = static_cast<int32_t>(pos_.y());
+    updateVisits(currentPos);
     return pos_;
   case NO_MOVE:
     return pos_;
@@ -152,15 +159,15 @@ void updateVisits(position pos) {
 
 // Getter for visit count
 int32_t getVisitCount(position pos) {
-    if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
-        return visitCount[pos.x][pos.y];
-    }
-    return -1; // Return -1 for invalid coordinates
+  if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
+    return visitCount[pos.x][pos.y];
+  }
+  return -1; // Return -1 for invalid coordinates
 }
 
 // Setter for visit count
 void setVisitCount(position pos, int32_t count) {
-    if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
-        visitCount[pos.x][pos.y] = count;
-    }
+  if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
+    visitCount[pos.x][pos.y] = count;
+  }
 }

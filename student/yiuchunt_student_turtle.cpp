@@ -55,13 +55,14 @@ int32_t getVisitCountLocal(position pos) {
   return -1; // Return -1 for invalid coordinates
 }
 
-std::map<direction, int32_t> getSurroundingCount(position pos) {
-  std::map<direction, int32_t> surroundingCount;
+// Function to get the visit count of surrounding cells
+std::map<int32_t, int32_t> getSurroundingPos(position pos) {
+  std::map<int32_t, int32_t> surroundingPos;
   surroundingPos[NORTH] = getVisitCountLocal({pos.x, pos.y + 1});
   surroundingPos[EAST] = getVisitCountLocal({pos.x + 1, pos.y});
   surroundingPos[SOUTH] = getVisitCountLocal({pos.x, pos.y - 1});
   surroundingPos[WEST] = getVisitCountLocal({pos.x - 1, pos.y});
-  return surroundingCount;
+  return surroundingPos;
 }
 
 // Setter for visit count
@@ -71,10 +72,18 @@ void setVisitCountLocal(position pos, int32_t count) {
   }
 }
 
-int32_t
-getMinVisitDirection(std::map<direction, int32_t> surroundingVisitCounts) {
+// Function to calculate the minimum turns to reach the new orientation
+int calculateTurns(int current_orientation, int new_orientation) {
+  int turns = std::abs(current_orientation - new_orientation);
+  return std::min(turns, 4 - turns); // Minimum turns considering wrap-around
+}
+
+// Function to get the find the direction with the least visit count, return -1
+// if all surrounding cells have the same visit count
+int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
+                             int32_t new_orientation) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
-  direction minOrientation = UP;
+  int32_t minOrientation;
 
   bool allSame = true;
   int32_t firstVisitCount = -1;
@@ -93,77 +102,68 @@ getMinVisitDirection(std::map<direction, int32_t> surroundingVisitCounts) {
   }
 
   for (const auto &entry : surroundingVisitCounts) {
-    if (visitCount < minVisit) {
-      minVisit = visitCount;
+    if (entry.second < minVisit) {
+      minVisit = entry.second;
       minOrientation = entry.first;
+    } else if (entry.second == minVisit) {
+      // If visit count is the same, choose the orientation with the least turns
+      int currentTurns = calculateTurns(new_orientation, minOrientation);
+      int newTurns = calculateTurns(new_orientation, entry.first);
+      if (newTurns < currentTurns) {
+        minOrientation = entry.first;
+      }
     }
   }
 
   return minOrientation;
 }
 
-void nextState(int32_t &current_state, bool bump, direction new_orientation) {
-  static std::map<direction, int32_t> surroundingPos =
-      getSurroundingPos(currentPos);
-  static int32_t minVisitDirection = getMinVisitDirection();
-  if (current_state == FORWARD) {
-    surroundingPos = getSurroundingPos(currentPos);
-    minVisitDirection = getMinVisitDirection();
-  }
-  if (minVisitDirection == -1) {
-    RHRnextState(current_state, bump);
-  } else {
-    leastVisitNextState(current_state, bump, new_orientation,
-                        minVisitDirection, surroundingPos);
+// determine the most optimal turn to reach the least visited cell, 90 degrees
+// at a time
+void leastVisitTurnDetermination(int32_t &current_state,
+                                 int32_t new_orientation,
+                                 int32_t minVisitDirection) {
+  const int32_t NUM_DIRECTIONS = 4;
+  int32_t diff =
+      (minVisitDirection - new_orientation + NUM_DIRECTIONS) % NUM_DIRECTIONS;
+
+  switch (diff) {
+  case 0:
+    current_state = FORWARD;
+    break;
+  case 1:
+    current_state = RIGHT;
+    break;
+  case 2:
+    current_state = RIGHT;
+    break;
+  case 3:
+    current_state = LEFT;
+    break;
   }
 }
 
+// When not all surrounding cells have same visit count, determine next state
+// based on least visit count, if bump, try to visit the next least visited cell
 void leastVisitNextState(int32_t &current_state, bool bump,
-                         direction new_orientation, direction &minVisitDirection,
-                         std::map<direction, int32_t> &surroundingPos) {
+                         int32_t new_orientation, int32_t &minVisitDirection,
+                         std::map<int32_t, int32_t> &surroundingPos) {
   if (new_orientation == minVisitDirection) {
     if (bump) {
       surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-      minVisitDirection = getMinVisitDirection(surroundingPos);
-      int32_t diff = (minVisitDirection - new_orientation + 4) % 4;
-
-      switch (diff) {
-      case 0: // No turn needed
-        current_state = FORWARD;
-        break;
-      case 1: // Turn right
-        current_state = RIGHT;
-        break;
-      case 2: // Turn around (180 degrees)
-        current_state = RIGHT;
-        break;
-      case 3: // Turn left
-        current_state = LEFT;
-        break;
-      }
+      minVisitDirection = getMinVisitDirection(surroundingPos, new_orientation);
+      leastVisitTurnDetermination(current_state, new_orientation,
+                                  minVisitDirection);
     } else {
       current_state = FORWARD;
     }
   } else {
-    int32_t diff = (minVisitDirection - new_orientation + 4) % 4;
-
-    switch (diff) {
-    case 0: // No turn needed
-      current_state = FORWARD;
-      break;
-    case 1: // Turn right
-      current_state = RIGHT;
-      break;
-    case 2: // Turn around (180 degrees)
-      current_state = RIGHT;
-      break;
-    case 3: // Turn left
-      current_state = LEFT;
-      break;
-    }
+    leastVisitTurnDetermination(current_state, new_orientation,
+                                minVisitDirection);
   }
 }
 
+// Right hand rule, for when all surrounding cells have same visit count
 void RHRnextState(int32_t &current_state, bool bump) {
   switch (current_state) {
   case RIGHT:
@@ -189,13 +189,35 @@ void RHRnextState(int32_t &current_state, bool bump) {
   }
 }
 
+void nextState(int32_t &current_state, bool bump, int32_t new_orientation,
+               position currentPos) {
+  static std::map<int32_t, int32_t> surroundingPos =
+      getSurroundingPos(currentPos);
+  static int32_t minVisitDirection =
+      getMinVisitDirection(surroundingPos, new_orientation);
+
+  // update surroundingPos and minVisitDirection after FORWARD
+  if (current_state == FORWARD) {
+    surroundingPos = getSurroundingPos(currentPos);
+    minVisitDirection = getMinVisitDirection(surroundingPos, new_orientation);
+  }
+
+  if (minVisitDirection == -1) {
+    // if all surrounding cells have same visit count, use right hand rule
+    RHRnextState(current_state, bump);
+  } else {
+    // if not all surrounding cells have same visit count, use least visit count
+    leastVisitNextState(current_state, bump, new_orientation, minVisitDirection,
+                        surroundingPos);
+  }
+}
+
 // this procedure takes the current turtle position and orientation and returns
 // true=submit changes, false=do not submit changes
 // Ground rule -- you are only allowed to call the helper functions "bumped(..)"
 // and "atend(..)", and NO other turtle methods or maze methods (no peeking at
 // the maze!)
-turtleMove studentTurtleStep(bool bumped) {
-  // bool studentMoveTurtle(QPointF &pos_, int32_t &new_orientation) {
+turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static const int32_t TIMEOUT =
       4; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
@@ -205,15 +227,14 @@ turtleMove studentTurtleStep(bool bumped) {
   static int32_t new_orientation = NORTH;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
-  if (cycle == 0) {
-    nextState(current_state, bumped, new_orientation);
+  if (cycle == 0 && !stopMove) {
+    nextState(current_state, bumped, new_orientation, currentPos);
 
     ROS_INFO("Orientation=%d  STATE=%d", new_orientation, current_state);
 
     cycle = TIMEOUT;
     switch (current_state) {
     case FORWARD:
-      updateVisitsLocal(currentPos);
       if (new_orientation == SOUTH) {
         currentPos.y -= 1;
       }
@@ -226,6 +247,7 @@ turtleMove studentTurtleStep(bool bumped) {
       if (new_orientation == WEST) {
         currentPos.x -= 1;
       }
+      updateVisitsLocal(currentPos);
       return MOVE;
     case RIGHT:
       rotateDirection(new_orientation, true);
