@@ -260,6 +260,8 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
       break;
     }
   }
-  cycle -= CYCLE_DECREASE; // decrease cycle
+  if (!stopMove){
+    cycle -= CYCLE_DECREASE; // decrease cycle
+  }
   return NO_MOVE;          // don't submit changes
 }
