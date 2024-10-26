@@ -28,15 +28,14 @@ static int visitCount[MAZE_SIZE][MAZE_SIZE] = {0};
 // this procedure takes the current orientation and a boolean indicating
 // whether to rotate clockwise or counterclockwise, and returns the new
 // orientation
-void rotateDirection(int32_t &new_orientation, bool clockwise) {
+void rotateDirection(int32_t &orientation, bool clockwise) {
   const int32_t NUM_DIRECTIONS = 4;
   const int32_t CLOCKWISE_INCREMENT = 1;
   const int32_t COUNTERCLOCKWISE_INCREMENT = 3;
   if (clockwise) {
-    new_orientation = (new_orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    orientation = (orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   } else {
-    new_orientation =
-        (new_orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    orientation = (orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   }
   return;
 }
@@ -73,15 +72,15 @@ void setVisitCountLocal(position pos, int32_t count) {
 }
 
 // Function to calculate the minimum turns to reach the new orientation
-int calculateTurns(int current_orientation, int new_orientation) {
-  int turns = std::abs(current_orientation - new_orientation);
+int calculateTurns(int current_orientation, int orientation) {
+  int turns = std::abs(current_orientation - orientation);
   return std::min(turns, 4 - turns); // Minimum turns considering wrap-around
 }
 
 // Function to get the find the direction with the least visit count, return -1
 // if all surrounding cells have the same visit count
-int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
-                             int32_t new_orientation) {
+int32_t getMinVisitOrientation(std::map<int32_t, int32_t> surroundingVisitCounts,
+                             int32_t orientation) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
   int32_t minOrientation;
 
@@ -98,7 +97,7 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
   }
 
   if (allSame) {
-    return -1;
+    return NA;
   }
 
   for (const auto &entry : surroundingVisitCounts) {
@@ -107,8 +106,8 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
       minOrientation = entry.first;
     } else if (entry.second == minVisit) {
       // If visit count is the same, choose the orientation with the least turns
-      int currentTurns = calculateTurns(new_orientation, minOrientation);
-      int newTurns = calculateTurns(new_orientation, entry.first);
+      int currentTurns = calculateTurns(orientation, minOrientation);
+      int newTurns = calculateTurns(orientation, entry.first);
       if (newTurns < currentTurns) {
         minOrientation = entry.first;
       }
@@ -118,48 +117,44 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
   return minOrientation;
 }
 
-// determine the most optimal turn to reach the least visited cell, 90 degrees
-// at a time
-void leastVisitTurnDetermination(int32_t &current_state,
-                                 int32_t new_orientation,
-                                 int32_t minVisitDirection) {
-  const int32_t NUM_DIRECTIONS = 4;
-  int32_t diff =
-      (minVisitDirection - new_orientation + NUM_DIRECTIONS) % NUM_DIRECTIONS;
-
-  switch (diff) {
-  case 0:
-    current_state = FORWARD;
-    break;
-  case 1:
-    current_state = RIGHT;
-    break;
-  case 2:
-    current_state = RIGHT;
-    break;
-  case 3:
-    current_state = LEFT;
-    break;
-  }
-}
-
 // When not all surrounding cells have same visit count, determine next state
 // based on least visit count, if bump, try to visit the next least visited cell
-void leastVisitNextState(int32_t &current_state, bool bump,
-                         int32_t new_orientation, int32_t &minVisitDirection,
+void leastVisitNextState(int32_t &current_state, bool bump, int32_t orientation,
+                         int32_t &minVisitOrientation,
                          std::map<int32_t, int32_t> &surroundingPos) {
-  if (new_orientation == minVisitDirection) {
-    if (bump) {
-      surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-      minVisitDirection = getMinVisitDirection(surroundingPos, new_orientation);
-      leastVisitTurnDetermination(current_state, new_orientation,
-                                  minVisitDirection);
+  switch (current_state) {
+  case RIGHT:
+    if (orientation == minVisitOrientation) {
+      if (bump) {
+        surroundingPos[minVisitOrientation] = std::numeric_limits<int32_t>::max();
+        minVisitOrientation = getMinVisitOrientation(surroundingPos, orientation);
+        current_state = LEFT;
+      } else {
+        current_state = FORWARD;
+      }
     } else {
-      current_state = FORWARD;
+      current_state = LEFT;
     }
-  } else {
-    leastVisitTurnDetermination(current_state, new_orientation,
-                                minVisitDirection);
+    break;
+  case LEFT:
+    if (orientation == minVisitOrientation) {
+      if (bump) {
+        surroundingPos[minVisitOrientation] = std::numeric_limits<int32_t>::max();
+        minVisitOrientation = getMinVisitOrientation(surroundingPos, orientation);
+        current_state = LEFT;
+      } else {
+        current_state = FORWARD;
+      }
+    } else {
+      current_state = LEFT;
+    }
+    break;
+  case FORWARD:
+    current_state = RIGHT;
+    break;
+  default:
+    ROS_ERROR("Invalid state");
+    break;
   }
 }
 
@@ -189,25 +184,25 @@ void RHRnextState(int32_t &current_state, bool bump) {
   }
 }
 
-void nextState(int32_t &current_state, bool bump, int32_t new_orientation,
+void nextState(int32_t &current_state, bool bump, int32_t orientation,
                position currentPos) {
   static std::map<int32_t, int32_t> surroundingPos =
       getSurroundingPos(currentPos);
-  static int32_t minVisitDirection =
-      getMinVisitDirection(surroundingPos, new_orientation);
+  static int32_t minVisitOrientation =
+      getMinVisitOrientation(surroundingPos, orientation);
 
-  // update surroundingPos and minVisitDirection after FORWARD
+  // update surroundingPos and minVisitOrientation after FORWARD
   if (current_state == FORWARD) {
     surroundingPos = getSurroundingPos(currentPos);
-    minVisitDirection = getMinVisitDirection(surroundingPos, new_orientation);
+    minVisitOrientation = getMinVisitOrientation(surroundingPos, orientation);
   }
 
-  if (minVisitDirection == -1) {
+  if (minVisitOrientation == NA) {
     // if all surrounding cells have same visit count, use right hand rule
     RHRnextState(current_state, bump);
   } else {
     // if not all surrounding cells have same visit count, use least visit count
-    leastVisitNextState(current_state, bump, new_orientation, minVisitDirection,
+    leastVisitNextState(current_state, bump, orientation, minVisitOrientation,
                         surroundingPos);
   }
 }
@@ -224,44 +219,44 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static int32_t cycle = 0;
   static int32_t current_state = RIGHT;
   static position currentPos = {MAZE_CENTER, MAZE_CENTER};
-  static int32_t new_orientation = NORTH;
+  static int32_t orientation = NORTH;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0 && !stopMove) {
-    nextState(current_state, bumped, new_orientation, currentPos);
+    nextState(current_state, bumped, orientation, currentPos);
 
-    ROS_INFO("Orientation=%d  STATE=%d", new_orientation, current_state);
+    ROS_INFO("Orientation=%d  STATE=%d", orientation, current_state);
 
     cycle = TIMEOUT;
     switch (current_state) {
     case FORWARD:
-      if (new_orientation == SOUTH) {
+      if (orientation == SOUTH) {
         currentPos.y -= 1;
       }
-      if (new_orientation == EAST) {
+      if (orientation == EAST) {
         currentPos.x += 1;
       }
-      if (new_orientation == NORTH) {
+      if (orientation == NORTH) {
         currentPos.y += 1;
       }
-      if (new_orientation == WEST) {
+      if (orientation == WEST) {
         currentPos.x -= 1;
       }
       updateVisitsLocal(currentPos);
       return MOVE;
     case RIGHT:
-      rotateDirection(new_orientation, true);
+      rotateDirection(orientation, true);
       return TURN_RIGHT;
     case LEFT:
-      rotateDirection(new_orientation, false);
+      rotateDirection(orientation, false);
       return TURN_LEFT;
     default:
       ROS_ERROR("Invalid state");
       break;
     }
   }
-  if (!stopMove){
+  if (!stopMove) {
     cycle -= CYCLE_DECREASE; // decrease cycle
   }
-  return NO_MOVE;          // don't submit changes
+  return NO_MOVE; // don't submit changes
 }

@@ -35,11 +35,12 @@ struct Position {
 typedef Position position;
 
 // enum for the direction the turtle is facing
-enum direction { WEST = 0, SOUTH = 1, EAST = 2, NORTH = 3 };
+enum direction { WEST = 0, SOUTH = 1, EAST = 2, NORTH = 3, NA = -1 };
 
 // enum for the state of the turtle
 // enum state { GO = 1, CHECKBUMP = 0 };
-enum state { FORWARD = 1, RIGHT = 2, LEFT = 3 };
+enum state { FORWARD = 1, RIGHT = 2, LEFT = 3, STOP = 4 };
 
+enum p7_state { SOLVING = 1, LEASTVISIT = 2, RHR = 3, SOLVED = 4 };
 void updateVisits(position pos);
 bool checkBumped(position pos_, int32_t &new_orientation);
