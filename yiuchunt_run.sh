@@ -15,8 +15,6 @@ kill_processes() {
 }
 
 # Arguments checking
-maze_number=$1
-maze_file="m${maze_number}.maze"
 if [[ $# -gt 1 ]]; then
     echo "Only one argument allowed: yiuchunt_run.sh [-h|--help] [MAZEFILE_NAME]"
     exit 1
@@ -26,6 +24,9 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     echo "Usage: ./yiuchunt_run.sh [-h|--help] [MAZEFILE_NAME]"
     exit 2
 fi
+
+maze_number=${1:-1}
+maze_file="m${maze_number}.maze"
 
 # Run roscore if it is not already running
 ROSCORE_PID=""
@@ -44,9 +45,7 @@ sleep 5
 
 # If maze file argument is provided, pass it to the backend via ros param
 # (code backend defaults to m1.maze so we don't worry about that case)
-if [[ -n $maze_file ]]; then
-    rosparam set /maze_file "$maze_file"
-fi
+rosparam set /maze_file "$maze_file"
 
 # Node that displays the maze and runs the turtle
 rosrun ece642rtle ece642rtle_node&
