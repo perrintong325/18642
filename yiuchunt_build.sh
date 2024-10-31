@@ -28,7 +28,7 @@ if [ -d "$target_directory/ece642rtle" ]; then
     rm -rf "$target_directory/ece642rtle"
 fi
 
-tar -zxvf ANDREWID_files.tgz -C "$target_directory"
+tar -zxvf yiuchunt_ece642rtle.tgz -C "$target_directory"
 
 # Locate the ece642rtle directory
 turtledir=`rospack find ece642rtle`
