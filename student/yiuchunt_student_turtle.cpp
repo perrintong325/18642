@@ -24,6 +24,7 @@ const int32_t MAZE_CENTER = MAZE_SIZE / 2;
 
 // File-static array to keep track of the number of visits to each cell
 static int visitCount[MAZE_SIZE][MAZE_SIZE] = {0};
+void displayVisits(int visits);
 
 // this procedure takes the current orientation and a boolean indicating
 // whether to rotate clockwise or counterclockwise, and returns the new
@@ -43,6 +44,7 @@ void rotateDirection(int32_t &orientation, bool clockwise) {
 void updateVisitsLocal(position pos) {
   if (pos.x >= 0 && pos.x < MAZE_SIZE && pos.y >= 0 && pos.y < MAZE_SIZE) {
     visitCount[pos.x][pos.y]++;
+    displayVisits(visitCount[pos.x][pos.y]);
   }
 }
 

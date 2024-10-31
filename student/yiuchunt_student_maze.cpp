@@ -82,7 +82,6 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove,
     position currentPos;
     currentPos.x = static_cast<int32_t>(pos_.x());
     currentPos.y = static_cast<int32_t>(pos_.y());
-    updateVisits(currentPos);
     return pos_;
   case NO_MOVE:
     return pos_;
@@ -147,27 +146,4 @@ bool checkBumped(position pos_, int32_t &new_orientation) {
   }
 
   return bumped(currentPos.x, currentPos.y, nextPos.x, nextPos.y);
-}
-
-// Function to update the visit count and call displayVisits
-void updateVisits(position pos) {
-  if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
-    visitCount[pos.x][pos.y]++;
-    displayVisits(visitCount[pos.x][pos.y]);
-  }
-}
-
-// Getter for visit count
-int32_t getVisitCount(position pos) {
-  if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
-    return visitCount[pos.x][pos.y];
-  }
-  return -1; // Return -1 for invalid coordinates
-}
-
-// Setter for visit count
-void setVisitCount(position pos, int32_t count) {
-  if (pos.x >= 0 && pos.x < MAP_SIZE && pos.y >= 0 && pos.y < MAP_SIZE) {
-    visitCount[pos.x][pos.y] = count;
-  }
 }
