@@ -23,12 +23,6 @@
 
 #include "student.h"
 
-// Define the maze size
-const int32_t MAP_SIZE = 12;
-
-// File-static array to keep track of the number of visits to each cell
-static int visitCount[MAP_SIZE][MAP_SIZE] = {0};
-
 /*
  * This procedure takes the current turtle position and orientation and returns
  * true=accept changes, false=do not accept changes Ground rule -- you are only
@@ -79,9 +73,6 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove,
     if (new_orientation == WEST) {
       pos_.setX(pos_.x() - movement);
     }
-    position currentPos;
-    currentPos.x = static_cast<int32_t>(pos_.x());
-    currentPos.y = static_cast<int32_t>(pos_.y());
     return pos_;
   case NO_MOVE:
     return pos_;
