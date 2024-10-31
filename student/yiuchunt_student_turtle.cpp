@@ -24,7 +24,6 @@ const int32_t MAZE_CENTER = MAZE_SIZE / 2;
 
 // File-static array to keep track of the number of visits to each cell
 static int visitCount[MAZE_SIZE][MAZE_SIZE] = {0};
-void displayVisits(int visits);
 
 // this procedure takes the current orientation and a boolean indicating
 // whether to rotate clockwise or counterclockwise, and returns the new
@@ -84,7 +83,7 @@ int calculateTurns(int current_orientation, int orientation) {
 int32_t getMinVisitOrientation(std::map<int32_t, int32_t> surroundingVisitCounts,
                              int32_t orientation) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
-  int32_t minOrientation;
+  int32_t minOrientation = NA;
 
   bool allSame = true;
   int32_t firstVisitCount = -1;
