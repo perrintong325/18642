@@ -43,7 +43,7 @@ fi
 cd "$turtledir/../.."
 echo "Working from catkin workspace $(pwd)"
 echo ""
-
+catkin_make -DCATKIN_WHITELIST_PACKAGES="ece642rtle"
 # Build the student node
 catkin_make ece642rtle_student
 if [ $? -ne 0 ]; then
