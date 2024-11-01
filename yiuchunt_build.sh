@@ -11,6 +11,7 @@ kill_processes() {
 	fi
     done
     echo "killed all processes, exiting"
+    cd ~
     exit 0
 }
 
