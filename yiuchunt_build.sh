@@ -31,13 +31,7 @@ fi
 tar -zxvf yiuchunt_files.tgz -C "$target_directory"
 
 # Locate the ece642rtle directory
-turtledir=`rospack find ece642rtle`
-if [ -z "$turtledir" ]; then
-    echo "Cannot locate package ece642rtle."
-    echo "Did you run catkin_make (with no arguments) in the"
-    echo " Catkin workspace before proceeding?"
-    exit 1
-fi
+turtledir="$target_directory/ece642rtle"
 
 # Catkin WS is two directories above package directory
 cd "$turtledir/../.."
