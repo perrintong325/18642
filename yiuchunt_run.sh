@@ -11,6 +11,7 @@ kill_processes() {
 	fi
     done
     echo "killed all processes, exiting"
+    cd ~
     exit 0
 }
 
@@ -48,6 +49,11 @@ sleep 5
 rosparam set /maze_file "$maze_file"
 
 # Node that displays the maze and runs the turtle
+target_directory="catkin_ws"
+cd "$target_directory"
+echo "Working from catkin workspace $(pwd)"
+echo ""
+source devel/setup.bash
 rosrun ece642rtle ece642rtle_node&
 TURTLE_PID=$!
 sleep 1
