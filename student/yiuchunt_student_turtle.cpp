@@ -45,6 +45,7 @@ void updateVisitsLocal(position pos) {
   if (pos.x >= 0 && pos.x < MAZE_SIZE && pos.y >= 0 && pos.y < MAZE_SIZE) {
     visitCount[pos.x][pos.y]++;
   }
+  displayVisits(visitCount[pos.x][pos.y]);
 }
 
 // Getter for visit count
