@@ -230,6 +230,9 @@ void nextState(int32_t &move_state, bool bump, int32_t new_orientation,
     move_state = STOP;
     currentState = SOLVED; // T6
     break;
+  default:
+    ROS_ERROR("Invalid state");
+    break;
   }
 }
 
