@@ -252,8 +252,8 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static int32_t orientation = NORTH;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
-  if (cycle == 0 && !stopMove) {
-    nextState(current_state, bumped, orientation, currentPos);
+  if (cycle == 0) {
+    nextState(current_state, bumped, orientation, currentPos, stopMove);
 
     ROS_INFO("Orientation=%d  STATE=%d", orientation, current_state);
 
