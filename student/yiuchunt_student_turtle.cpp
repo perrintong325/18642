@@ -83,7 +83,7 @@ int calculateTurns(int current_orientation, int new_orientation) {
 int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
                              int32_t new_orientation) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
-  int32_t minOrientation;
+  int32_t minOrientation = NA;
 
   bool allSame = true;
   int32_t firstVisitCount = -1;
@@ -195,7 +195,7 @@ void RHRnextState(int32_t &move_state, bool bump) {
 void nextState(int32_t &move_state, bool bump, int32_t new_orientation,
                position currentPos, bool stopMove) {
   static std::map<int32_t, int32_t> surroundingPos;
-  static int32_t minVisitDirection;
+  static int32_t minVisitDirection = NA;
   static int32_t currentState = SOLVING;
 
   switch (currentState) {
