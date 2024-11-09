@@ -5,11 +5,12 @@
  * dummy turtle statechart. It uses the CUnit framework (cunit.sourceforge.net)
  */
 
-#include "student_mock.h"
+#include "student.h"
 #include <CUnit/Basic.h>
 
 void test_t1() {
-  move_state return_state = moveTurtle(MOVE_FORWARD, true);
+  int32_t current_state = RIGHT;
+  move_state return_state = moveTurtle(current_state, false, );
   orientation output_orientation = test_orientation_result();
 
   CU_ASSERT_EQUAL(output_orientation, UP);

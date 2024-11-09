@@ -35,8 +35,7 @@ void rotateDirection(int32_t &orientation, bool clockwise) {
   if (clockwise) {
     orientation = (orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   } else {
-    orientation =
-        (orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    orientation = (orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
   }
   return;
 }
@@ -121,42 +120,40 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
 
 // When not all surrounding cells have same visit count, determine next state
 // based on least visit count, if bump, try to visit the next least visited cell
-void leastVisitNextState(int32_t &current_state, bool bump,
-                         int32_t orientation, int32_t &minVisitDirection,
+void leastVisitNextState(int32_t &moving_state, bool bump, int32_t orientation,
+                         int32_t &minVisitDirection,
                          std::map<int32_t, int32_t> &surroundingPos) {
-  switch (current_state) {
+  switch (moving_state) {
   case RIGHT:
     if (orientation == minVisitDirection) {
       if (bump) { // T2.1
         surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-        minVisitDirection =
-            getMinVisitDirection(surroundingPos, orientation);
-        current_state = LEFT;
+        minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+        moving_state = LEFT;
       } else { // T2.7
-        current_state = FORWARD;
+        moving_state = FORWARD;
       }
     } else { // T2.4
-      current_state = LEFT;
+      moving_state = LEFT;
     }
     break;
   case LEFT:
     if (orientation == minVisitDirection) {
       if (bump) { // T2.3
         surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-        minVisitDirection =
-            getMinVisitDirection(surroundingPos, orientation);
-        current_state = LEFT;
+        minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+        moving_state = LEFT;
       } else { // T2.6
-        current_state = FORWARD;
+        moving_state = FORWARD;
       }
     } else { // T2.5
-      current_state = LEFT;
+      moving_state = LEFT;
     }
     break;
   case FORWARD:
     break;
   case STOP:
-    current_state = RIGHT;
+    moving_state = RIGHT;
     break;
   default:
     ROS_ERROR("Invalid state");
@@ -165,26 +162,26 @@ void leastVisitNextState(int32_t &current_state, bool bump,
 }
 
 // Right hand rule, for when all surrounding cells have same visit count
-void RHRnextState(int32_t &current_state, bool bump) {
-  switch (current_state) {
+void RHRnextState(int32_t &moving_state, bool bump) {
+  switch (moving_state) {
   case RIGHT:
     if (bump) { // T1.1
-      current_state = LEFT;
+      moving_state = LEFT;
     } else { // T1.4
-      current_state = FORWARD;
+      moving_state = FORWARD;
     }
     break;
   case LEFT:
     if (bump) { // T1.2
-      current_state = LEFT;
+      moving_state = LEFT;
     } else { // T1.3
-      current_state = FORWARD;
+      moving_state = FORWARD;
     }
     break;
   case FORWARD:
     break;
   case STOP:
-    current_state = RIGHT;
+    moving_state = RIGHT;
     break;
   default:
     ROS_ERROR("Invalid state");
@@ -193,15 +190,17 @@ void RHRnextState(int32_t &current_state, bool bump) {
 }
 
 // State Chart Top Level Function (state block)
-void nextState(int32_t &current_state, bool bump, int32_t orientation,
-               position currentPos, bool stopMove) {
-  static std::map<int32_t, int32_t> surroundingPos;
-  static int32_t minVisitDirection = NA;
-  static int32_t currentState = SOLVING;
+void nextState(int32_t &moving_state, bool bump, int32_t orientation,
+               position currentPos, bool stopMove,
+               std::map<int32_t, int32_t> &surroundingPos,
+               int32_t &minVisitDirection, int32_t &currentState) {
+  // static std::map<int32_t, int32_t> surroundingPos;
+  // static int32_t minVisitDirection = NA;
+  // static int32_t currentState = SOLVING;
 
   switch (currentState) {
   case SOLVING: // S1
-    current_state = STOP;
+    moving_state = STOP;
     surroundingPos = getSurroundingPos(currentPos);
     minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
     if (!stopMove) {
@@ -215,20 +214,20 @@ void nextState(int32_t &current_state, bool bump, int32_t orientation,
     }
     break;
   case RHR: // S2
-    RHRnextState(current_state, bump);
-    if (current_state == FORWARD) { // T5
+    RHRnextState(moving_state, bump);
+    if (moving_state == FORWARD) { // T5
       currentState = SOLVING;
     }
     break;
   case LEASTVISIT: // S3
-    leastVisitNextState(current_state, bump, orientation, minVisitDirection,
+    leastVisitNextState(moving_state, bump, orientation, minVisitDirection,
                         surroundingPos);
-    if (current_state == FORWARD) { // T4
+    if (moving_state == FORWARD) { // T4
       currentState = SOLVING;
     }
     break;
   case SOLVED: // S4
-    current_state = STOP;
+    moving_state = STOP;
     currentState = SOLVED; // T6
     break;
   default:
@@ -247,18 +246,22 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
       4; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
   static int32_t cycle = 0;
-  static int32_t current_state = RIGHT;
+  static int32_t moving_state = RIGHT;
   static position currentPos = {MAZE_CENTER, MAZE_CENTER};
   static int32_t orientation = NORTH;
+  static std::map<int32_t, int32_t> surroundingPos;
+  static int32_t minVisitDirection = NA;
+  static int32_t currentState = SOLVING;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0) {
-    nextState(current_state, bumped, orientation, currentPos, stopMove);
+    nextState(moving_state, bumped, orientation, currentPos, stopMove,
+              surroundingPos, minVisitDirection, currentState);
 
-    ROS_INFO("Orientation=%d  STATE=%d", orientation, current_state);
+    ROS_INFO("Orientation=%d  STATE=%d", orientation, moving_state);
 
     cycle = TIMEOUT;
-    switch (current_state) {
+    switch (moving_state) {
     case FORWARD:
       if (orientation == SOUTH) {
         currentPos.y -= 1;
