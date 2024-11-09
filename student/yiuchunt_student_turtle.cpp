@@ -157,10 +157,10 @@ void leastVisitNextState(int32_t &moving_state, bool bump, int32_t orientation,
     }
     break;
   case FORWARD:
-    break;
+    break; //T4
   case STOP:
     moving_state = RIGHT;
-    break;
+    break; //T2
   default:
     ROS_ERROR("Invalid state");
     break;
@@ -185,9 +185,9 @@ void RHRnextState(int32_t &moving_state, bool bump) {
     }
     break;
   case FORWARD:
-    break;
+    break; //T5
   case STOP:
-    moving_state = RIGHT;
+    moving_state = RIGHT; //T1
     break;
   default:
     ROS_ERROR("Invalid state");
@@ -197,15 +197,13 @@ void RHRnextState(int32_t &moving_state, bool bump) {
 
 // State Chart Top Level Function (state block)
 void nextState(int32_t &moving_state, bool bump, int32_t orientation,
-               position currentPos, bool stopMove,
+               bool stopMove,
                std::map<int32_t, int32_t> &surroundingPos,
                int32_t &minVisitDirection, int32_t &currentState) {
 
   switch (currentState) {
   case SOLVING: // S1
     moving_state = STOP;
-    surroundingPos = getSurroundingPos(currentPos);
-    minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
     if (!stopMove) {
       if (minVisitDirection == NA) { // T1
         currentState = RHR;
@@ -258,7 +256,11 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
   if (cycle == 0) {
-    nextState(moving_state, bumped, orientation, currentPos, stopMove,
+    if (currentState == SOLVING) {
+      surroundingPos = getSurroundingPos(currentPos);
+      minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+    }
+    nextState(moving_state, bumped, orientation, stopMove,
               surroundingPos, minVisitDirection, currentState);
 
     ROS_INFO("Orientation=%d  STATE=%d", orientation, moving_state);
