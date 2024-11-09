@@ -11,7 +11,13 @@
  *
  */
 
+#ifdef testing
+#include "student_mock.h"
+#endif
+#ifndef testing
 #include "student.h"
+#include "ros/ros.h"
+#endif
 
 // Ignore this line until project 5
 // turtleMove studentTurtleStep(bool bumped) { return MOVE; }
@@ -194,9 +200,6 @@ void nextState(int32_t &moving_state, bool bump, int32_t orientation,
                position currentPos, bool stopMove,
                std::map<int32_t, int32_t> &surroundingPos,
                int32_t &minVisitDirection, int32_t &currentState) {
-  // static std::map<int32_t, int32_t> surroundingPos;
-  // static int32_t minVisitDirection = NA;
-  // static int32_t currentState = SOLVING;
 
   switch (currentState) {
   case SOLVING: // S1

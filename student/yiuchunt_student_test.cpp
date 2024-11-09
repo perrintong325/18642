@@ -5,26 +5,30 @@
  * dummy turtle statechart. It uses the CUnit framework (cunit.sourceforge.net)
  */
 
-#include "student.h"
+#include "student_mock.h"
 #include <CUnit/Basic.h>
 
 void test_t1() {
-  int32_t current_state = RIGHT;
-  move_state return_state = moveTurtle(current_state, false, );
-  orientation output_orientation = test_orientation_result();
+  int32_t moving_state = RIGHT;
+  std::map<int32_t, int32_t> surroundingPos = {
+      {NORTH, 0}, {SOUTH, 0}, {EAST, 0}, {WEST, 0}};
+  int32_t minVisitDirection = NA;
+  int32_t currentState = SOLVING;
+  nextState(moving_state, false, NORTH, {MAZE_CENTER, MAZE_CENTER}, false,
+            surroundingPos, minVisitDirection, currentState);
 
-  CU_ASSERT_EQUAL(output_orientation, UP);
-  CU_ASSERT_EQUAL(return_state, MOVE_FORWARD);
+  CU_ASSERT_EQUAL(currentState, RHR);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
 }
 
-void test_t2() {
-  mock_set_bump(true);
-  move_state return_state = moveTurtle(MOVE_FORWARD, false);
-  orientation output_orienation = test_orientation_result();
+// void test_t2() {
+//   mock_set_bump(true);
+//   move_state return_state = moveTurtle(MOVE_FORWARD, false);
+//   orientation output_orienation = test_orientation_result();
 
-  CU_ASSERT_EQUAL(output_orienation, UP);
-  CU_ASSERT_EQUAL(return_state, MOVE_BACK);
-}
+//   CU_ASSERT_EQUAL(output_orienation, UP);
+//   CU_ASSERT_EQUAL(return_state, MOVE_BACK);
+// }
 
 int init() {
   // Any test initialization code goes here
@@ -54,12 +58,11 @@ int main() {
 
   /* add the tests to the suite */
   if ((NULL == CU_add_test(pSuite, "test of transition T1", test_t1)) ||
-      (NULL == CU_add_test(pSuite, "test of transition T2", test_t2)))
-    {
-      CU_cleanup_registry();
-      return CU_get_error();
-    }
-  
+      (NULL == CU_add_test(pSuite, "test of transition T2", test_t2))) {
+    CU_cleanup_registry();
+    return CU_get_error();
+  }
+
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
@@ -68,5 +71,3 @@ int main() {
 
   return 0;
 }
-
-
