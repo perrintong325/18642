@@ -54,6 +54,7 @@ cd "$target_directory"
 echo "Working from catkin workspace $(pwd)"
 echo ""
 source devel/setup.bash
+rosrun ece642rtle ece642rtle_turn_monitor&
 rosrun ece642rtle ece642rtle_node&
 TURTLE_PID=$!
 sleep 1
@@ -63,14 +64,14 @@ if [[ -z $(pgrep ece642rtle_node) ]]; then
     exit 1
 fi
 # Have to kill BG processes if user exits
-trap 'kill_processes $TURTLE_PID $ROSCORE_PID' SIGINT
+trap 'kill_processes $MONITOR_PID $TURTLE_PID $ROSCORE_PID' SIGINT
 sleep 9
 
 # Student node
 rosrun ece642rtle ece642rtle_student&
 STUDENT_PID=$!
 # Have to kill BG processes if user exits
-trap 'kill_processes $STUDENT_PID $TURTLE_PID $ROSCORE_PID' SIGINT
+trap 'kill_processes $MONITOR_PID $STUDENT_PID $TURTLE_PID $ROSCORE_PID' SIGINT
 
 # Spin
 while [ 1 -eq 1 ]; do

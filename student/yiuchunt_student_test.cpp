@@ -528,7 +528,7 @@ void test_t3() {
 
 // Test T4
 void test_t4() {
-  moving_state = RIGHT;
+  moving_state = FORWARD;
   surroundingPos = {{NORTH, 0}, {SOUTH, 0}, {EAST, 0}, {WEST, 0}};
   minVisitDirection = NORTH;
   currentState = LEASTVISIT;

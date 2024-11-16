@@ -45,6 +45,8 @@ if [ $? -ne 0 ]; then
     echo "catkin_make did not succeed, exiting script"
     exit 1
 fi
+# Build turn monitor
+catkin_make ece642rtle_turn_monitor
 
 # So ROS can find everything
 source devel/setup.bash
