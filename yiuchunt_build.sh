@@ -45,8 +45,16 @@ if [ $? -ne 0 ]; then
     echo "catkin_make did not succeed, exiting script"
     exit 1
 fi
-# Build turn monitor
+# Build monitors
 catkin_make ece642rtle_turn_monitor
+catkin_make ece642rtle_atend_monitor
+catkin_make ece642rtle_face_monitor
+catkin_make ece642rtle_forward_monitor
+catkin_make ece642rtle_solved_monitor
+catkin_make ece642rtle_tick_monitor
+catkin_make ece642rtle_wall_monitor
+catkin_make ece642rtle_logging_monitor
+catkin_make ece642rtle_step_monitor
 
 # So ROS can find everything
 source devel/setup.bash

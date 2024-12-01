@@ -17,7 +17,7 @@
 // (x,y) coordinates of a turtle pose
 typedef struct{int x; int y;} Pose;
 // endpoints of a potential wall segment
-typedef struct {int x1; int y1; int x2; int y2;} Endpoints;
+typedef struct {int x1; int y1; int x2; int y2; bool bumped;} Endpoints;
 /*
  * Relationship between pose and endpoints: 
  *   (x,y)+-----+(x+1,y)

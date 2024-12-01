@@ -3,15 +3,32 @@
 # Will kill all processes that are passed as arguments
 # Used with trap to guarantee that CTRL+C on this script kills all BG processes
 kill_processes() {
-    for p in "$@"; do
-	if [[ -z $(ps -p $p > /dev/null) ]]; then
-	    echo "Killing process $p"
-	    kill $p
-	    sleep 1
-	fi
+    touch VIOLATIONS.txt
+    rm VIOLATIONS.txt
+    total_viol=0
+    while [[ $# -gt 0 ]]; do
+        m=$1
+        shift
+        if [[ -n $(pgrep -x ${m:0:15}) ]]; then
+            echo "Killing monitor $m"
+            kill $(pgrep -x ${m:0:15})
+            sleep 2
+        fi
+        # Process any non-empty monitor file
+        if [ -s "$m.output.tmp" ]; then
+            echo "" >> VIOLATIONS.txt
+            echo "Monitor $m Violations:" >> VIOLATIONS.txt
+            echo "" >> VIOLATIONS.txt
+            grep -C 5 "[ WARN]" $m.output.tmp >> VIOLATIONS.txt
+            m_viol=$(grep "[ WARN]" $m.output.tmp | wc -l)
+            total_viol=$(( total_viol + m_viol ))
+            rm $m.output.tmp
+            echo "" >> VIOLATIONS.txt
+        fi
     done
+    echo "TOTAL VIOLATIONS: $total_viol"
+    echo "Any violations logged in VIOLATIONS.txt"
     echo "killed all processes, exiting"
-    cd ~
     exit 0
 }
 
@@ -54,7 +71,33 @@ cd "$target_directory"
 echo "Working from catkin workspace $(pwd)"
 echo ""
 source devel/setup.bash
-rosrun ece642rtle ece642rtle_turn_monitor&
+
+# Start the monitors and capture their PIDs
+MONITORS=(
+    "ece642rtle_logging_monitor"
+    "ece642rtle_step_monitor"
+    "ece642rtle_turn_monitor"
+    "ece642rtle_atend_monitor"
+    "ece642rtle_face_monitor"
+    "ece642rtle_forward_monitor"
+    "ece642rtle_solved_monitor"
+    "ece642rtle_tick_monitor"
+    "ece642rtle_wall_monitor"
+)
+
+for mon in "${MONITORS[@]}"; do
+    echo "Starting monitor $mon"
+    stdbuf -oL rosrun ece642rtle $mon | tee $mon.output.tmp &
+    sleep 1
+    # Need -f for full name because process name might be long
+    if [[ -z $(pgrep ${mon:0:15}) ]]; then
+        echo "Error launching $mon. Have you run catkin_make?"
+        rm $mon.output.tmp
+        kill_processes "${MONITORS[@]}"
+        exit 1
+    fi
+done
+
 rosrun ece642rtle ece642rtle_node&
 TURTLE_PID=$!
 sleep 1
@@ -64,14 +107,14 @@ if [[ -z $(pgrep ece642rtle_node) ]]; then
     exit 1
 fi
 # Have to kill BG processes if user exits
-trap 'kill_processes $MONITOR_PID $TURTLE_PID $ROSCORE_PID' SIGINT
+trap 'kill_processes "${MONITORS[@]}" $TURTLE_PID' SIGINT
 sleep 9
 
 # Student node
 rosrun ece642rtle ece642rtle_student&
 STUDENT_PID=$!
 # Have to kill BG processes if user exits
-trap 'kill_processes $MONITOR_PID $STUDENT_PID $TURTLE_PID $ROSCORE_PID' SIGINT
+trap 'kill_processes "${MONITORS[@]}" $TURTLE_PID $STUDENT_PID' SIGINT
 
 # Spin
 while [ 1 -eq 1 ]; do

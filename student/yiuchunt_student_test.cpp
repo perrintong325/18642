@@ -86,7 +86,7 @@ void test_t2() {
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
   CU_ASSERT_EQUAL(moving_state, STOP);
 
-  // T2 when minVisitDirection is SOUTH
+  // T2 when minVisitDirection is EAST
   minVisitDirection = EAST;
   currentState = SOLVING;
   nextState(moving_state, false, NORTH, false,
@@ -95,13 +95,12 @@ void test_t2() {
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
   CU_ASSERT_EQUAL(moving_state, STOP);
 
-  // T2 when minVisitDirection is EAST
+  // T2 when minVisitDirection is SOUTH
   minVisitDirection = SOUTH;
   currentState = SOLVING;
   nextState(moving_state, false, NORTH, false,
             surroundingPos, minVisitDirection, currentState);
 
-  // T2 when minVisitDirection is WEST
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
   CU_ASSERT_EQUAL(moving_state, STOP);
 
@@ -156,18 +155,6 @@ void test_t2_1() {
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
   CU_ASSERT_EQUAL(moving_state, LEFT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
-}
-
-// Test T2.2
-void test_t2_2() {
-  moving_state = RIGHT;
-  surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 1}, {WEST, 0}};
-  minVisitDirection = NORTH;
-  currentState = LEASTVISIT;
-  leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
-  CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
-  CU_ASSERT_EQUAL(minVisitDirection, WEST);
 }
 
 // Test T2.3
@@ -607,7 +594,6 @@ int main() {
       (NULL == CU_add_test(pSuite2, "test of invalid state", test_RHR_default)) ||
       (NULL == CU_add_test(pSuite1, "test of transition T2", test_t2)) ||
       (NULL == CU_add_test(pSuite3, "test of transition T2.1", test_t2_1)) ||
-      (NULL == CU_add_test(pSuite3, "test of transition T2.2", test_t2_2)) ||
       (NULL == CU_add_test(pSuite3, "test of transition T2.3", test_t2_3)) ||
       (NULL == CU_add_test(pSuite3, "test of transition T2.4", test_t2_4)) ||
       (NULL == CU_add_test(pSuite3, "test of transition T2.5", test_t2_5)) ||

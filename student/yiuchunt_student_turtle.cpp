@@ -79,17 +79,17 @@ void setVisitCountLocal(position pos, int32_t count) {
 }
 
 // Function to calculate the minimum turns to reach the new orientation
-int calculateTurns(int current_orientation, int orientation) {
-  int turns = std::abs(current_orientation - orientation);
+int32_t calculateTurns(direction current_orientation, direction orientation) {
+  int32_t turns = std::abs(current_orientation - orientation);
   return std::min(turns, 4 - turns); // Minimum turns considering wrap-around
 }
 
 // Function to get the find the direction with the least visit count, return -1
 // if all surrounding cells have the same visit count
 int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
-                             int32_t orientation) {
+                             direction orientation) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
-  int32_t minOrientation = NA;
+  direction minOrientation = NA;
 
   bool allSame = true;
   int32_t firstVisitCount = -1;
@@ -113,8 +113,8 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
       minOrientation = entry.first;
     } else if (entry.second == minVisit) {
       // If visit count is the same, choose the orientation with the least turns
-      int currentTurns = calculateTurns(orientation, minOrientation);
-      int newTurns = calculateTurns(orientation, entry.first);
+      int32_t currentTurns = calculateTurns(orientation, minOrientation);
+      int32_t newTurns = calculateTurns(orientation, entry.first);
       if (newTurns < currentTurns) {
         minOrientation = entry.first;
       }
@@ -126,7 +126,7 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
 
 // When not all surrounding cells have same visit count, determine next state
 // based on least visit count, if bump, try to visit the next least visited cell
-void leastVisitNextState(int32_t &moving_state, bool bump, int32_t orientation,
+void leastVisitNextState(int32_t &moving_state, bool bump, direction orientation,
                          int32_t &minVisitDirection,
                          std::map<int32_t, int32_t> &surroundingPos) {
   switch (moving_state) {
@@ -244,7 +244,7 @@ void nextState(int32_t &moving_state, bool bump, int32_t orientation,
 // the maze!)
 turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static const int32_t TIMEOUT =
-      4; // bigger number slows down simulation so you can see what's happening
+      40; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
   static int32_t cycle = 0;
   static int32_t moving_state = RIGHT;

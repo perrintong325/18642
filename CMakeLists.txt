@@ -52,6 +52,12 @@ set(monitor_TARGETS_SRCS
   "ece642rtle_logging_monitor monitors/logging_monitor.cpp"
   "ece642rtle_step_monitor monitors/step_monitor.cpp"
   "ece642rtle_turn_monitor monitors/yiuchunt_turn_monitor.cpp"
+  "ece642rtle_atend_monitor monitors/yiuchunt_atend_monitor.cpp"
+  "ece642rtle_face_monitor monitors/yiuchunt_face_monitor.cpp"
+  "ece642rtle_forward_monitor monitors/yiuchunt_forward_monitor.cpp"
+  "ece642rtle_solved_monitor monitors/yiuchunt_solved_monitor.cpp"
+  "ece642rtle_tick_monitor monitors/yiuchunt_tick_monitor.cpp"
+  "ece642rtle_wall_monitor monitors/yiuchunt_wall_monitor.cpp"
   )
 
 set(ece642rtle_monitor_main monitors/ros_monitor_interface.cpp)
