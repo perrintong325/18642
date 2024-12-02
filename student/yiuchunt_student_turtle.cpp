@@ -79,17 +79,17 @@ void setVisitCountLocal(position pos, int32_t count) {
 }
 
 // Function to calculate the minimum turns to reach the new orientation
-int32_t calculateTurns(direction current_orientation, direction orientation) {
-  int32_t turns = std::abs(current_orientation - orientation);
+int calculateTurns(int current_orientation, int orientation) {
+  int turns = std::abs(current_orientation - orientation);
   return std::min(turns, 4 - turns); // Minimum turns considering wrap-around
 }
 
 // Function to get the find the direction with the least visit count, return -1
 // if all surrounding cells have the same visit count
 int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
-                             direction orientation) {
+                             int32_t orientation, int32_t state) {
   int32_t minVisit = std::numeric_limits<int32_t>::max();
-  direction minOrientation = NA;
+  int32_t minOrientation = NA;
 
   bool allSame = true;
   int32_t firstVisitCount = -1;
@@ -113,10 +113,26 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
       minOrientation = entry.first;
     } else if (entry.second == minVisit) {
       // If visit count is the same, choose the orientation with the least turns
-      int32_t currentTurns = calculateTurns(orientation, minOrientation);
-      int32_t newTurns = calculateTurns(orientation, entry.first);
+      int currentTurns = calculateTurns(orientation, minOrientation);
+      int newTurns = calculateTurns(orientation, entry.first);
       if (newTurns < currentTurns) {
         minOrientation = entry.first;
+      } else if (newTurns == currentTurns) {
+        int offset = 0;
+        switch (state) {
+        case RIGHT:
+          offset = -1;
+          break;
+        case LEFT:
+          offset = 1;
+          break;
+        case FORWARD:
+        case STOP:
+        default:
+          ROS_ERROR("Invalid state");
+          break;
+        }
+        minOrientation = (minOrientation + offset) % 4;
       }
     }
   }
@@ -126,7 +142,7 @@ int32_t getMinVisitDirection(std::map<int32_t, int32_t> surroundingVisitCounts,
 
 // When not all surrounding cells have same visit count, determine next state
 // based on least visit count, if bump, try to visit the next least visited cell
-void leastVisitNextState(int32_t &moving_state, bool bump, direction orientation,
+void leastVisitNextState(int32_t &moving_state, bool bump, int32_t orientation,
                          int32_t &minVisitDirection,
                          std::map<int32_t, int32_t> &surroundingPos) {
   switch (moving_state) {
@@ -134,7 +150,7 @@ void leastVisitNextState(int32_t &moving_state, bool bump, direction orientation
     if (orientation == minVisitDirection) {
       if (bump) { // T2.1
         surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-        minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+        minVisitDirection = getMinVisitDirection(surroundingPos, orientation, LEFT);
         moving_state = LEFT;
       } else { // T2.7
         moving_state = FORWARD;
@@ -147,7 +163,7 @@ void leastVisitNextState(int32_t &moving_state, bool bump, direction orientation
     if (orientation == minVisitDirection) {
       if (bump) { // T2.3
         surroundingPos[minVisitDirection] = std::numeric_limits<int32_t>::max();
-        minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+        minVisitDirection = getMinVisitDirection(surroundingPos, orientation, LEFT);
         moving_state = LEFT;
       } else { // T2.6
         moving_state = FORWARD;
@@ -244,7 +260,7 @@ void nextState(int32_t &moving_state, bool bump, int32_t orientation,
 // the maze!)
 turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static const int32_t TIMEOUT =
-      40; // bigger number slows down simulation so you can see what's happening
+      10; // bigger number slows down simulation so you can see what's happening
   static const int32_t CYCLE_DECREASE = 1;
   static int32_t cycle = 0;
   static int32_t moving_state = RIGHT;
@@ -255,10 +271,11 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   static int32_t currentState = SOLVING;
 
   ROS_INFO("Turtle update Called  cycle=%d", cycle);
+  turtleMove move = NO_MOVE;
   if (cycle == 0) {
     if (currentState == SOLVING) {
       surroundingPos = getSurroundingPos(currentPos);
-      minVisitDirection = getMinVisitDirection(surroundingPos, orientation);
+      minVisitDirection = getMinVisitDirection(surroundingPos, orientation, RIGHT);
     }
     nextState(moving_state, bumped, orientation, stopMove,
               surroundingPos, minVisitDirection, currentState);
@@ -281,15 +298,19 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
         currentPos.x -= 1;
       }
       updateVisitsLocal(currentPos);
-      return MOVE;
+      move = MOVE;
+      break;
     case RIGHT:
       rotateDirection(orientation, true);
-      return TURN_RIGHT;
+      move = TURN_RIGHT;
+      break;
     case LEFT:
       rotateDirection(orientation, false);
-      return TURN_LEFT;
+      move = TURN_LEFT;
+      break;
     case STOP:
-      return NO_MOVE;
+      move = NO_MOVE;
+      break;
     default:
       ROS_ERROR("Invalid state");
       break;
@@ -298,5 +319,5 @@ turtleMove studentTurtleStep(bool bumped, bool stopMove) {
   if (!stopMove) {
     cycle -= CYCLE_DECREASE; // decrease cycle
   }
-  return NO_MOVE; // don't submit changes
+  return move;
 }

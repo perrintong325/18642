@@ -92,3 +92,8 @@ void tickInterrupt(ros::Time t) {
 
 void atEndInterrupt(ros::Time t, int x, int y, bool atEnd) {
 }
+
+void printStartMsg() {
+    std::time_t now = std::time(nullptr);
+    std::cerr << "Monitor yiuchunt_wall_monitor is running at " << std::ctime(&now);
+}

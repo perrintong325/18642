@@ -57,9 +57,9 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove,
   static const int32_t movement = 1;
   switch (nextMove) {
   case TURN_LEFT:
-    return pos_;
+    break;
   case TURN_RIGHT:
-    return pos_;
+    break;
   case MOVE:
     if (new_orientation == SOUTH) {
       pos_.setY(pos_.y() - movement);
@@ -73,13 +73,14 @@ QPointF translatePos(QPointF pos_, turtleMove nextMove,
     if (new_orientation == WEST) {
       pos_.setX(pos_.x() - movement);
     }
-    return pos_;
+    break;
   case NO_MOVE:
-    return pos_;
+    break;
   default:
     ROS_ERROR("Invalid move");
-    return pos_;
+    break;
   }
+  return pos_;
 }
 
 /*

@@ -60,3 +60,8 @@ void visitInterrupt(ros::Time t, int visits) {
 
 void atEndInterrupt(ros::Time t, int x, int y, bool atEnd) {
 }
+
+void printStartMsg() {
+    std::time_t now = std::time(nullptr);
+    std::cerr << "Monitor yiuchunt_face_monitor is running at " << std::ctime(&now);
+}

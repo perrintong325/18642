@@ -40,3 +40,8 @@ void visitInterrupt(ros::Time t, int visits) {
 
 void bumpInterrupt(ros::Time t, int x1, int y1, int x2, int y2, bool bumped) {
 }
+
+void printStartMsg() {
+    std::time_t now = std::time(nullptr);
+    std::cerr << "Monitor yiuchunt_atend_monitor is running at " << std::ctime(&now);
+}

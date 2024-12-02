@@ -116,7 +116,7 @@ void test_t2() {
 
 // Test T2.1
 void test_t2_1() {
-  moving_state = RIGHT;
+  moving_state = LEFT;
   surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 1}, {WEST, 0}};
 
   // T2.1 when minVisitDirection and orientation are NORTH
@@ -125,41 +125,41 @@ void test_t2_1() {
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.1 when minVisitDirection and orientation are EAST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = EAST;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.1 when minVisitDirection and orientation are SOUTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = SOUTH;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.1 when minVisitDirection and orientation and orientation are WEST
   surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 0}, {WEST, 1}};
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = WEST;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 }
 
 // Test T2.3
 void test_t2_3() {
-  moving_state = LEFT;
+  moving_state = RIGHT;
   surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 1}, {WEST, 0}};
 
   // T2.3 when minVisitDirection and orientation are NORTH
@@ -168,7 +168,7 @@ void test_t2_3() {
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.3 when minVisitDirection and orientation are EAST
@@ -176,7 +176,7 @@ void test_t2_3() {
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.3 when minVisitDirection and orientation are SOUTH
@@ -184,7 +184,7 @@ void test_t2_3() {
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.3 when minVisitDirection and orientation are WEST
@@ -193,125 +193,124 @@ void test_t2_3() {
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
 
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 }
 
 void test_t2_4() {
-  moving_state = RIGHT;
   surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 1}, {WEST, 0}};
 
   // T2.4 when minVisitDirection is EAST and orientation is NORTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = EAST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.4 when minVisitDirection is SOUTH and orientation is NORTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = SOUTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 
   // T2.4 when minVisitDirection is WEST and orientation is NORTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = WEST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.4 when minVisitDirection is SOUTH and orientation is EAST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = SOUTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 
   // T2.4 when minVisitDirection is WEST and orientation is EAST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = WEST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.4 when minVisitDirection is NORTH and orientation is EAST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = NORTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.4 when minVisitDirection is WEST and orientation is SOUTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = WEST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.4 when minVisitDirection is NORTH and orientation is SOUTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = NORTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.4 when minVisitDirection is EAST and orientation is SOUTH
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = EAST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.4 when minVisitDirection is NORTH and orientation is WEST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = NORTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.4 when minVisitDirection is EAST and orientation is WEST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = EAST;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.4 when minVisitDirection is SOUTH and orientation is WEST
-  moving_state = RIGHT;
+  moving_state = LEFT;
   minVisitDirection = SOUTH;
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 }
 
 void test_t2_5() {
-  moving_state = LEFT;
+  moving_state = RIGHT;
   surroundingPos = {{NORTH, 1}, {SOUTH, 1}, {EAST, 1}, {WEST, 0}};
 
   // T2.5 when minVisitDirection is EAST and orientation is NORTH
@@ -319,7 +318,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.5 when minVisitDirection is SOUTH and orientation is NORTH
@@ -327,7 +326,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 
   // T2.5 when minVisitDirection is WEST and orientation is NORTH
@@ -335,7 +334,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, NORTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.5 when minVisitDirection is SOUTH and orientation is EAST
@@ -343,7 +342,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 
   // T2.5 when minVisitDirection is WEST and orientation is EAST
@@ -351,7 +350,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.5 when minVisitDirection is NORTH and orientation is EAST
@@ -359,7 +358,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, EAST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.5 when minVisitDirection is WEST and orientation is SOUTH
@@ -367,7 +366,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, WEST);
 
   // T2.5 when minVisitDirection is NORTH and orientation is SOUTH
@@ -375,7 +374,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.5 when minVisitDirection is EAST and orientation is SOUTH
@@ -383,7 +382,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, SOUTH, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.5 when minVisitDirection is NORTH and orientation is WEST
@@ -391,7 +390,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, NORTH);
 
   // T2.5 when minVisitDirection is EAST and orientation is WEST
@@ -399,7 +398,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, EAST);
 
   // T2.5 when minVisitDirection is SOUTH and orientation is WEST
@@ -408,7 +407,7 @@ void test_t2_5() {
   currentState = LEASTVISIT;
   leastVisitNextState(moving_state, true, WEST, minVisitDirection, surroundingPos);
   CU_ASSERT_EQUAL(currentState, LEASTVISIT);
-  CU_ASSERT_EQUAL(moving_state, LEFT);
+  CU_ASSERT_EQUAL(moving_state, RIGHT);
   CU_ASSERT_EQUAL(minVisitDirection, SOUTH);
 }
 

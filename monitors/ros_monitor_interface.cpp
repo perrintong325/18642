@@ -60,6 +60,8 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "ece642rtle_monitor", ros::init_options::AnonymousName);
     ros::NodeHandle nh;
 
+    printStartMsg();
+
     RTI_pob_sub_ = nh.subscribe("turtle1/RTI_pob",1, RTIpobCallback);
     TRI_pob_sub_ = nh.subscribe("turtle1/TRI_pob",1, TRIpobCallback);
     TRI_vist_sub_ = nh.subscribe("turtle1/TRI_vist",1,TRIvistCallback);
@@ -68,3 +70,4 @@ int main(int argc, char** argv)
     
     ros::spin();
 }
+
