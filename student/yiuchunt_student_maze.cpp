@@ -43,9 +43,8 @@ bool moveTurtle(QPointF &pos_, int &new_orientation) {
 
   if (atend(currentPos.x, currentPos.y)) {
     stopMove = true;
-    return false;
   }
-  return true;
+  return !stopMove;
 }
 
 /*
@@ -91,19 +90,26 @@ int translateOrnt(int orientation, turtleMove nextMove) {
   const int32_t NUM_DIRECTIONS = 4;
   const int32_t CLOCKWISE_INCREMENT = 1;
   const int32_t COUNTERCLOCKWISE_INCREMENT = 3;
+  int solution = orientation;
   switch (nextMove) {
   case TURN_LEFT:
-    return (orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    solution = (orientation + COUNTERCLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    break;
   case TURN_RIGHT:
-    return (orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    solution = (orientation + CLOCKWISE_INCREMENT) % NUM_DIRECTIONS;
+    break;
   case MOVE:
-    return orientation;
+    solution = orientation;
+    break;
   case NO_MOVE:
-    return orientation;
+    solution = orientation;
+    break;
   default:
     ROS_ERROR("Invalid move");
-    return orientation;
+    solution = orientation;
+    break;
   }
+  return solution;
 }
 
 bool checkBumped(position pos_, int32_t &new_orientation) {

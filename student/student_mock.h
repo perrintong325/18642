@@ -31,7 +31,7 @@ enum direction { WEST = 0, SOUTH = 1, EAST = 2, NORTH = 3, NA = -1 };
 
 // enum for the state of the turtle
 // enum state { GO = 1, CHECKBUMP = 0 };
-enum state { FORWARD = 1, RIGHT = 2, LEFT = 3, STOP = 4 };
+enum state { FORWARD = 1, RIGHT = 2, LEFT = 3, STOP = 4, WRONG = 5 };
 
 enum p7_state { SOLVING = 1, LEASTVISIT = 2, RHR = 3, SOLVED = 4 };
 
@@ -39,16 +39,16 @@ void ROS_ERROR(std::string e);
 
 void ROS_INFO(const char* format, ...);
 
-void nextState(int32_t &moving_state, bool bump, int32_t orientation,
+void nextState(state &moving_state, bool bump, direction orientation,
                bool stopMove,
-               std::map<int32_t, int32_t> &surroundingPos,
-               int32_t &minVisitDirection, int32_t &currentState);
+               std::map<direction, int32_t> &surroundingPos,
+               direction &minVisitDirection, p7_state &currentState);
 
-void leastVisitNextState(int32_t &moving_state, bool bump, int32_t orientation,
-                         int32_t &minVisitDirection,
-                         std::map<int32_t, int32_t> &surroundingPos);
+void leastVisitNextState(state &moving_state, bool bump, direction orientation,
+                         direction &minVisitDirection,
+                         std::map<direction, int32_t> &surroundingPos);
 
-void RHRnextState(int32_t &moving_state, bool bump);
+void RHRnextState(state &moving_state, bool bump);
 
 void displayVisits(int visits);
 

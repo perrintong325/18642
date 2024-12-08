@@ -1,7 +1,7 @@
 #include "monitor_interface.h"
 
 // Circular queue to store recent bumpInterrupt calls
-const int MAX_BUMPS = 8;
+const int MAX_BUMPS = 4;
 Endpoints bumpQueue[MAX_BUMPS];
 int bumpIndex = 0;
 bool bumpQueueFull = false;
